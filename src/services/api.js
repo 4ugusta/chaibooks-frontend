@@ -74,6 +74,7 @@ export const invoiceAPI = {
   update: (id, data) => api.put(`/invoices/${id}`, data),
   delete: (id) => api.delete(`/invoices/${id}`),
   updatePayment: (id, data) => api.patch(`/invoices/${id}/payment`, data),
+  deletePayment: (id, paymentId) => api.delete(`/invoices/${id}/payment/${paymentId}`),
   downloadPDF: (id) => api.get(`/invoices/${id}/pdf`, { responseType: 'blob' }),
   downloadEWayBill: (id) => api.get(`/invoices/${id}/eway-bill`, { responseType: 'blob' })
 }

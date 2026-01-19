@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useNavigate, useParams } from 'react-router-dom'
 import { invoiceAPI } from '../../services/api'
-import { ArrowLeft, Download, FileText } from 'lucide-react'
+import { ArrowLeft, Download, FileText, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
@@ -81,6 +81,21 @@ export default function InvoiceDetail() {
     } catch (error) {
       console.error('Failed to record payment:', error)
       toast.error('Failed to record payment')
+    }
+  }
+
+  const handleDeletePayment = async (paymentId) => {
+    if (!window.confirm('Are you sure you want to delete this payment? This will also delete the linked transaction.')) {
+      return
+    }
+
+    try {
+      await invoiceAPI.deletePayment(id, paymentId)
+      toast.success('Payment deleted successfully')
+      loadInvoice() // Reload invoice data
+    } catch (error) {
+      console.error('Failed to delete payment:', error)
+      toast.error('Failed to delete payment')
     }
   }
 
@@ -362,15 +377,25 @@ export default function InvoiceDetail() {
                   <th className="text-left">Method</th>
                   <th className="text-left">Reference</th>
                   <th className="text-right">Amount</th>
+                  <th className="text-right">Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
-                {invoice.payments.map((payment, index) => (
-                  <tr key={index}>
+                {invoice.payments.map((payment) => (
+                  <tr key={payment._id}>
                     <td>{format(new Date(payment.date), 'dd MMM yyyy')}</td>
                     <td className="capitalize">{payment.method}</td>
                     <td className="text-gray-600">{payment.reference || payment.notes || '-'}</td>
                     <td className="text-right font-semibold text-green-600">₹{payment.amount?.toFixed(2)}</td>
+                    <td className="text-right">
+                      <button
+                        onClick={() => handleDeletePayment(payment._id)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                        title="Delete payment"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
+                    </td>
                   </tr>
                 ))}
               </tbody>
