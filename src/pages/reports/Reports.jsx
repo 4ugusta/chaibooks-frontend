@@ -12,6 +12,19 @@ export default function Reports() {
   const [showSalesReport, setShowSalesReport] = useState(false)
   const [showStockReport, setShowStockReport] = useState(false)
 
+  // Format large numbers for display
+  const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '₹0.00'
+    const absAmount = Math.abs(amount)
+    if (absAmount >= 10000000) { // 1 crore
+      return `₹${(amount / 10000000).toFixed(2)}Cr`
+    } else if (absAmount >= 100000) { // 1 lakh
+      return `₹${(amount / 100000).toFixed(2)}L`
+    } else {
+      return `₹${amount.toFixed(2)}`
+    }
+  }
+
   useEffect(() => {
     loadReports()
   }, [])
@@ -98,44 +111,49 @@ export default function Reports() {
 
       {/* Profit & Loss Summary */}
       {profitLoss && (
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
           <div className="card">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Revenue</p>
-                <p className="text-2xl font-bold text-green-600">₹{profitLoss.revenue?.toFixed(2)}</p>
-              </div>
-              <TrendingUp className="w-8 h-8 text-green-500" />
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Total Costs</p>
-                <p className="text-2xl font-bold text-red-600">₹{profitLoss.cost?.toFixed(2)}</p>
-              </div>
-              <TrendingDown className="w-8 h-8 text-red-500" />
-            </div>
-          </div>
-
-          <div className="card">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Net Profit</p>
-                <p className={`text-2xl font-bold ${profitLoss.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                  ₹{profitLoss.netProfit?.toFixed(2)}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
+                <p className="text-xl lg:text-2xl font-bold text-green-600 truncate" title={`₹${profitLoss.revenue?.toFixed(2)}`}>
+                  {formatCurrency(profitLoss.revenue)}
                 </p>
               </div>
-              <DollarSign className="w-8 h-8 text-primary-500" />
+              <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0 ml-2" />
             </div>
           </div>
 
           <div className="card">
             <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Profit Margin</p>
-                <p className="text-2xl font-bold text-blue-600">{profitLoss.profitMargin?.toFixed(2)}%</p>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-600 mb-1">Total Costs</p>
+                <p className="text-xl lg:text-2xl font-bold text-red-600 truncate" title={`₹${profitLoss.cost?.toFixed(2)}`}>
+                  {formatCurrency(profitLoss.cost)}
+                </p>
+              </div>
+              <TrendingDown className="w-8 h-8 text-red-500 flex-shrink-0 ml-2" />
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-600 mb-1">Net Profit</p>
+                <p className={`text-xl lg:text-2xl font-bold truncate ${profitLoss.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                   title={`₹${profitLoss.netProfit?.toFixed(2)}`}>
+                  {formatCurrency(profitLoss.netProfit)}
+                </p>
+              </div>
+              <DollarSign className="w-8 h-8 text-primary-500 flex-shrink-0 ml-2" />
+            </div>
+          </div>
+
+          <div className="card">
+            <div className="flex items-center justify-between">
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-gray-600 mb-1">Profit Margin</p>
+                <p className="text-xl lg:text-2xl font-bold text-blue-600">{profitLoss.profitMargin?.toFixed(2)}%</p>
               </div>
             </div>
           </div>
@@ -161,24 +179,24 @@ export default function Reports() {
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
                       <p className="text-sm text-gray-600">CGST</p>
-                      <p className="text-lg font-semibold">₹{item.totalCGST?.toFixed(2)}</p>
+                      <p className="text-base font-semibold" title={`₹${item.totalCGST?.toFixed(2)}`}>{formatCurrency(item.totalCGST)}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">SGST</p>
-                      <p className="text-lg font-semibold">₹{item.totalSGST?.toFixed(2)}</p>
+                      <p className="text-base font-semibold" title={`₹${item.totalSGST?.toFixed(2)}`}>{formatCurrency(item.totalSGST)}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">IGST</p>
-                      <p className="text-lg font-semibold">₹{item.totalIGST?.toFixed(2)}</p>
+                      <p className="text-base font-semibold" title={`₹${item.totalIGST?.toFixed(2)}`}>{formatCurrency(item.totalIGST)}</p>
                     </div>
                     <div>
                       <p className="text-sm text-gray-600">Total GST</p>
-                      <p className="text-lg font-bold text-primary-600">₹{item.totalGST?.toFixed(2)}</p>
+                      <p className="text-base font-bold text-primary-600" title={`₹${item.totalGST?.toFixed(2)}`}>{formatCurrency(item.totalGST)}</p>
                     </div>
                   </div>
-                  <div className="mt-2">
-                    <p className="text-sm text-gray-600">Taxable Value: <span className="font-semibold">₹{item.totalTaxableValue?.toFixed(2)}</span></p>
-                    <p className="text-sm text-gray-600">Invoice Count: <span className="font-semibold">{item.invoiceCount}</span></p>
+                  <div className="mt-2 text-sm">
+                    <p className="text-gray-600">Taxable Value: <span className="font-semibold" title={`₹${item.totalTaxableValue?.toFixed(2)}`}>{formatCurrency(item.totalTaxableValue)}</span></p>
+                    <p className="text-gray-600">Invoice Count: <span className="font-semibold">{item.invoiceCount}</span></p>
                   </div>
                 </div>
               ))}

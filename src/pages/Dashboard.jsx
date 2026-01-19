@@ -13,6 +13,19 @@ export default function Dashboard() {
   })
   const [loading, setLoading] = useState(true)
 
+  // Format large numbers for display
+  const formatCurrency = (amount) => {
+    if (!amount && amount !== 0) return '₹0.00'
+    const absAmount = Math.abs(amount)
+    if (absAmount >= 10000000) { // 1 crore
+      return `₹${(amount / 10000000).toFixed(2)}Cr`
+    } else if (absAmount >= 100000) { // 1 lakh
+      return `₹${(amount / 100000).toFixed(2)}L`
+    } else {
+      return `₹${amount.toFixed(2)}`
+    }
+  }
+
   useEffect(() => {
     loadDashboardData()
   }, [])
@@ -40,14 +53,16 @@ export default function Dashboard() {
     }
   }
 
-  const StatCard = ({ title, value, icon: Icon, color, link }) => (
+  const StatCard = ({ title, value, icon: Icon, color, link, fullValue }) => (
     <Link to={link} className="card hover:shadow-md transition-shadow">
       <div className="flex items-center justify-between">
-        <div>
-          <p className="text-sm text-gray-600">{title}</p>
-          <p className="text-3xl font-bold mt-2">{loading ? '...' : value}</p>
+        <div className="flex-1 min-w-0">
+          <p className="text-sm text-gray-600 mb-1">{title}</p>
+          <p className="text-2xl lg:text-3xl font-bold truncate" title={fullValue}>
+            {loading ? '...' : value}
+          </p>
         </div>
-        <div className={`p-3 rounded-lg ${color}`}>
+        <div className={`p-3 rounded-lg ${color} flex-shrink-0 ml-2`}>
           <Icon className="w-8 h-8 text-white" />
         </div>
       </div>
@@ -87,7 +102,8 @@ export default function Dashboard() {
         />
         <StatCard
           title="Net Profit"
-          value={stats.profitLoss ? `₹${stats.profitLoss.netProfit.toFixed(2)}` : '₹0'}
+          value={stats.profitLoss ? formatCurrency(stats.profitLoss.netProfit) : '₹0'}
+          fullValue={stats.profitLoss ? `₹${stats.profitLoss.netProfit.toFixed(2)}` : '₹0'}
           icon={stats.profitLoss?.netProfit >= 0 ? TrendingUp : TrendingDown}
           color={stats.profitLoss?.netProfit >= 0 ? 'bg-primary-500' : 'bg-red-500'}
           link="/reports"
@@ -97,20 +113,22 @@ export default function Dashboard() {
       {stats.profitLoss && (
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
           <div className="card">
-            <h3 className="text-lg font-semibold mb-4">Revenue</h3>
-            <p className="text-2xl font-bold text-green-600">
-              ₹{stats.profitLoss.revenue.toFixed(2)}
+            <h3 className="text-lg font-semibold mb-2">Revenue</h3>
+            <p className="text-xl lg:text-2xl font-bold text-green-600 truncate"
+               title={`₹${stats.profitLoss.revenue.toFixed(2)}`}>
+              {formatCurrency(stats.profitLoss.revenue)}
             </p>
           </div>
           <div className="card">
-            <h3 className="text-lg font-semibold mb-4">Expenses</h3>
-            <p className="text-2xl font-bold text-red-600">
-              ₹{stats.profitLoss.cost.toFixed(2)}
+            <h3 className="text-lg font-semibold mb-2">Expenses</h3>
+            <p className="text-xl lg:text-2xl font-bold text-red-600 truncate"
+               title={`₹${stats.profitLoss.cost.toFixed(2)}`}>
+              {formatCurrency(stats.profitLoss.cost)}
             </p>
           </div>
           <div className="card">
-            <h3 className="text-lg font-semibold mb-4">Profit Margin</h3>
-            <p className="text-2xl font-bold text-blue-600">
+            <h3 className="text-lg font-semibold mb-2">Profit Margin</h3>
+            <p className="text-xl lg:text-2xl font-bold text-blue-600">
               {stats.profitLoss.profitMargin.toFixed(2)}%
             </p>
           </div>

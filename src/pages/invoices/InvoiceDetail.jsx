@@ -15,6 +15,7 @@ export default function InvoiceDetail() {
     amount: 0,
     method: 'cash',
     reference: '',
+    notes: '',
     date: new Date().toISOString().split('T')[0]
   })
 
@@ -333,23 +334,47 @@ export default function InvoiceDetail() {
         </div>
       )}
 
-      {/* Payment Information */}
-      {invoice.paymentDetails && (
+      {/* Payment Summary */}
+      {(invoice.payments && invoice.payments.length > 0) && (
         <div className="card">
-          <h2 className="text-lg font-semibold mb-4">Payment Details</h2>
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm">
-            <div>
-              <span className="text-gray-600">Payment Method:</span>
-              <p className="font-semibold capitalize">{invoice.paymentDetails.method}</p>
+          <h2 className="text-lg font-semibold mb-4">Payment Summary</h2>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 text-sm mb-6">
+            <div className="bg-green-50 p-4 rounded-lg">
+              <span className="text-gray-600 block mb-1">Total Paid</span>
+              <p className="text-2xl font-bold text-green-600">₹{invoice.amountPaid?.toFixed(2) || '0.00'}</p>
             </div>
-            <div>
-              <span className="text-gray-600">Amount Paid:</span>
-              <p className="font-semibold text-green-600">₹{invoice.paymentDetails.amountPaid?.toFixed(2)}</p>
+            <div className="bg-red-50 p-4 rounded-lg">
+              <span className="text-gray-600 block mb-1">Balance Due</span>
+              <p className="text-2xl font-bold text-red-600">₹{invoice.balanceDue?.toFixed(2) || '0.00'}</p>
             </div>
-            <div>
-              <span className="text-gray-600">Balance Due:</span>
-              <p className="font-semibold text-red-600">₹{(invoice.grandTotal - (invoice.paymentDetails.amountPaid || 0))?.toFixed(2)}</p>
+            <div className="bg-blue-50 p-4 rounded-lg">
+              <span className="text-gray-600 block mb-1">Total Payments</span>
+              <p className="text-2xl font-bold text-blue-600">{invoice.payments.length}</p>
             </div>
+          </div>
+
+          <h3 className="text-md font-semibold mb-3">Payment History</h3>
+          <div className="overflow-x-auto">
+            <table className="table text-sm">
+              <thead>
+                <tr>
+                  <th className="text-left">Date</th>
+                  <th className="text-left">Method</th>
+                  <th className="text-left">Reference</th>
+                  <th className="text-right">Amount</th>
+                </tr>
+              </thead>
+              <tbody className="divide-y divide-gray-200">
+                {invoice.payments.map((payment, index) => (
+                  <tr key={index}>
+                    <td>{format(new Date(payment.date), 'dd MMM yyyy')}</td>
+                    <td className="capitalize">{payment.method}</td>
+                    <td className="text-gray-600">{payment.reference || payment.notes || '-'}</td>
+                    <td className="text-right font-semibold text-green-600">₹{payment.amount?.toFixed(2)}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
           </div>
         </div>
       )}
@@ -367,14 +392,21 @@ export default function InvoiceDetail() {
                   value={paymentData.amount}
                   onChange={(e) => setPaymentData({ ...paymentData, amount: parseFloat(e.target.value) })}
                   className="input"
-                  min="0"
+                  min="0.01"
                   step="0.01"
-                  max={invoice.grandTotal - (invoice.paymentDetails?.amountPaid || 0)}
+                  max={invoice.balanceDue || invoice.grandTotal}
                   required
                 />
-                <p className="text-xs text-gray-500 mt-1">
-                  Balance due: ₹{(invoice.grandTotal - (invoice.paymentDetails?.amountPaid || 0)).toFixed(2)}
-                </p>
+                <div className="flex justify-between items-center text-xs text-gray-500 mt-1">
+                  <span>Balance due: ₹{(invoice.balanceDue || invoice.grandTotal).toFixed(2)}</span>
+                  <button
+                    type="button"
+                    onClick={() => setPaymentData({ ...paymentData, amount: invoice.balanceDue || invoice.grandTotal })}
+                    className="text-primary-600 hover:text-primary-700 font-medium"
+                  >
+                    Pay Full
+                  </button>
+                </div>
               </div>
 
               <div>
@@ -406,13 +438,24 @@ export default function InvoiceDetail() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Reference/Notes</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Reference</label>
                 <input
                   type="text"
                   value={paymentData.reference}
                   onChange={(e) => setPaymentData({ ...paymentData, reference: e.target.value })}
                   className="input"
                   placeholder="Transaction ID, cheque number, etc."
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Notes</label>
+                <textarea
+                  value={paymentData.notes}
+                  onChange={(e) => setPaymentData({ ...paymentData, notes: e.target.value })}
+                  className="input"
+                  rows="2"
+                  placeholder="Additional notes (optional)"
                 />
               </div>
 
