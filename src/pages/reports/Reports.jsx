@@ -1,11 +1,16 @@
 import { useEffect, useState } from 'react'
 import { reportAPI } from '../../services/api'
-import { TrendingUp, TrendingDown, DollarSign } from 'lucide-react'
+import { TrendingUp, TrendingDown, DollarSign, Download, FileSpreadsheet } from 'lucide-react'
+import toast from 'react-hot-toast'
 
 export default function Reports() {
   const [gstReport, setGstReport] = useState(null)
   const [profitLoss, setProfitLoss] = useState(null)
+  const [salesData, setSalesData] = useState(null)
+  const [stockData, setStockData] = useState(null)
   const [loading, setLoading] = useState(true)
+  const [showSalesReport, setShowSalesReport] = useState(false)
+  const [showStockReport, setShowStockReport] = useState(false)
 
   useEffect(() => {
     loadReports()
@@ -24,6 +29,58 @@ export default function Reports() {
     } finally {
       setLoading(false)
     }
+  }
+
+  const loadSalesReport = async () => {
+    try {
+      const response = await reportAPI.getSales()
+      setSalesData(response.data)
+      setShowSalesReport(true)
+    } catch (error) {
+      console.error('Failed to load sales report:', error)
+      toast.error('Failed to load sales report')
+    }
+  }
+
+  const loadStockReport = async () => {
+    try {
+      const response = await reportAPI.getStock()
+      setStockData(response.data)
+      setShowStockReport(true)
+    } catch (error) {
+      console.error('Failed to load stock report:', error)
+      toast.error('Failed to load stock report')
+    }
+  }
+
+  const downloadGSTReport = () => {
+    if (!gstReport) return
+
+    // Create CSV content
+    let csv = 'GST Report - ITR Ready\n\n'
+    csv += 'Type,Taxable Value,CGST,SGST,IGST,Total GST,Invoice Count\n'
+
+    gstReport.summary?.forEach(item => {
+      csv += `${item._id},${item.totalTaxableValue},${item.totalCGST},${item.totalSGST},${item.totalIGST},${item.totalGST},${item.invoiceCount}\n`
+    })
+
+    csv += '\n\nDetailed by Rate\n'
+    csv += 'Type,GST Rate,Taxable Value,CGST,SGST,IGST,Total GST\n'
+
+    gstReport.detailedByRate?.forEach(item => {
+      csv += `${item._id.invoiceType},${item._id.gstRate}%,${item.taxableValue},${item.cgst},${item.sgst},${item.igst},${item.totalGst}\n`
+    })
+
+    // Download
+    const blob = new Blob([csv], { type: 'text/csv' })
+    const url = window.URL.createObjectURL(blob)
+    const link = document.createElement('a')
+    link.href = url
+    link.download = `GST-Report-${new Date().toISOString().split('T')[0]}.csv`
+    document.body.appendChild(link)
+    link.click()
+    document.body.removeChild(link)
+    toast.success('GST report downloaded')
   }
 
   if (loading) {
@@ -88,7 +145,13 @@ export default function Reports() {
       {/* GST Report */}
       {gstReport && (
         <div className="card">
-          <h2 className="text-xl font-semibold mb-4">GST Summary (ITR Ready)</h2>
+          <div className="flex items-center justify-between mb-4">
+            <h2 className="text-xl font-semibold">GST Summary (ITR Ready)</h2>
+            <button onClick={downloadGSTReport} className="btn btn-secondary btn-sm">
+              <Download className="w-4 h-4 mr-2" />
+              Download CSV
+            </button>
+          </div>
 
           {gstReport.summary && gstReport.summary.length > 0 ? (
             <div className="space-y-4">
@@ -166,15 +229,121 @@ export default function Reports() {
         <div className="card">
           <h2 className="text-xl font-semibold mb-2">Sales Report</h2>
           <p className="text-gray-600">Track your sales performance over time</p>
-          <button className="mt-4 btn btn-secondary">View Detailed Report</button>
+          <button onClick={loadSalesReport} className="mt-4 btn btn-secondary">
+            <FileSpreadsheet className="w-4 h-4 mr-2" />
+            View Detailed Report
+          </button>
         </div>
 
         <div className="card">
           <h2 className="text-xl font-semibold mb-2">Stock Report</h2>
           <p className="text-gray-600">Monitor inventory levels and low stock alerts</p>
-          <button className="mt-4 btn btn-secondary">View Stock Details</button>
+          <button onClick={loadStockReport} className="mt-4 btn btn-secondary">
+            <FileSpreadsheet className="w-4 h-4 mr-2" />
+            View Stock Details
+          </button>
         </div>
       </div>
+
+      {/* Sales Report Modal */}
+      {showSalesReport && salesData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Sales Report</h2>
+              <button onClick={() => setShowSalesReport(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            {salesData.sales && salesData.sales.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="table text-sm">
+                  <thead>
+                    <tr>
+                      <th>Invoice #</th>
+                      <th>Date</th>
+                      <th>Customer</th>
+                      <th>Amount</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {salesData.sales.map((sale, index) => (
+                      <tr key={index}>
+                        <td>{sale.invoiceNumber}</td>
+                        <td>{new Date(sale.invoiceDate).toLocaleDateString()}</td>
+                        <td>{sale.customer?.name}</td>
+                        <td>₹{sale.grandTotal?.toFixed(2)}</td>
+                        <td className="capitalize">{sale.paymentStatus}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="mt-4 p-4 bg-gray-50 rounded">
+                  <p className="font-semibold">Total Sales: ₹{salesData.totalSales?.toFixed(2)}</p>
+                  <p className="text-sm text-gray-600">Count: {salesData.sales.length} invoices</p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">No sales data available</p>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* Stock Report Modal */}
+      {showStockReport && stockData && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50 p-4">
+          <div className="bg-white rounded-lg p-6 max-w-4xl w-full max-h-[80vh] overflow-y-auto">
+            <div className="flex items-center justify-between mb-4">
+              <h2 className="text-xl font-semibold">Stock Report</h2>
+              <button onClick={() => setShowStockReport(false)} className="text-gray-500 hover:text-gray-700">✕</button>
+            </div>
+            {stockData.items && stockData.items.length > 0 ? (
+              <div className="overflow-x-auto">
+                <table className="table text-sm">
+                  <thead>
+                    <tr>
+                      <th>Item</th>
+                      <th>Category</th>
+                      <th>Quantity</th>
+                      <th>Weight (kg)</th>
+                      <th>Bags</th>
+                      <th>Min Level</th>
+                      <th>Status</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {stockData.items.map((item, index) => (
+                      <tr key={index}>
+                        <td className="font-medium">{item.name}</td>
+                        <td className="capitalize">{item.category}</td>
+                        <td>{item.stock?.quantity || 0}</td>
+                        <td>{item.stock?.weight?.toFixed(2) || 0}</td>
+                        <td>{item.stock?.bags || 0}</td>
+                        <td>{item.stock?.minStockLevel || 0}</td>
+                        <td>
+                          {(item.stock?.quantity || 0) <= (item.stock?.minStockLevel || 0) ? (
+                            <span className="text-red-600 font-semibold">Low Stock</span>
+                          ) : (
+                            <span className="text-green-600">Good</span>
+                          )}
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+                <div className="mt-4 p-4 bg-gray-50 rounded">
+                  <p className="font-semibold">Total Items: {stockData.items.length}</p>
+                  <p className="text-sm text-gray-600">
+                    Low Stock Items: {stockData.items.filter(i => (i.stock?.quantity || 0) <= (i.stock?.minStockLevel || 0)).length}
+                  </p>
+                </div>
+              </div>
+            ) : (
+              <p className="text-gray-500 text-center py-8">No stock data available</p>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   )
 }

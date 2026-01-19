@@ -58,7 +58,8 @@ export default function InvoiceDetail() {
       const url = window.URL.createObjectURL(new Blob([response.data]))
       const link = document.createElement('a')
       link.href = url
-      link.setAttribute('download', `EWAY-${invoice.ewayBill.number}.pdf`)
+      const ewayNumber = invoice.ewayBill?.number || invoice.eWayBill?.number
+      link.setAttribute('download', `EWAY-${ewayNumber}.pdf`)
       document.body.appendChild(link)
       link.click()
       link.remove()
@@ -134,7 +135,7 @@ export default function InvoiceDetail() {
             <Download className="w-4 h-4 mr-2" />
             Download PDF
           </button>
-          {invoice.ewayBill?.number && (
+          {(invoice.ewayBill?.number || invoice.eWayBill?.number) && (
             <button onClick={handleDownloadEWayBill} className="btn btn-secondary">
               <Download className="w-4 h-4 mr-2" />
               E-Way Bill
@@ -227,20 +228,20 @@ export default function InvoiceDetail() {
                     <div className="font-medium">{item.item?.name || 'N/A'}</div>
                     <div className="text-xs text-gray-500">{item.description}</div>
                   </td>
-                  <td className="text-right">{item.item?.hsnCode}</td>
+                  <td className="text-right">{item.hsnCode || item.item?.hsnCode}</td>
                   <td className="text-right">{item.quantity} {item.unit}</td>
                   <td className="text-right">₹{item.rate?.toFixed(2)}</td>
-                  <td className="text-right">₹{item.taxableAmount?.toFixed(2)}</td>
-                  <td className="text-right">{item.gstRate}%</td>
+                  <td className="text-right">₹{item.amount?.toFixed(2)}</td>
+                  <td className="text-right">{item.gst?.rate}%</td>
                   {invoice.isInterState ? (
-                    <td className="text-right">₹{item.igst?.toFixed(2)}</td>
+                    <td className="text-right">₹{item.gst?.igstAmount?.toFixed(2)}</td>
                   ) : (
                     <>
-                      <td className="text-right">₹{item.cgst?.toFixed(2)}</td>
-                      <td className="text-right">₹{item.sgst?.toFixed(2)}</td>
+                      <td className="text-right">₹{item.gst?.cgstAmount?.toFixed(2)}</td>
+                      <td className="text-right">₹{item.gst?.sgstAmount?.toFixed(2)}</td>
                     </>
                   )}
-                  <td className="text-right font-semibold">₹{item.totalAmount?.toFixed(2)}</td>
+                  <td className="text-right font-semibold">₹{item.total?.toFixed(2)}</td>
                 </tr>
               ))}
             </tbody>
@@ -259,24 +260,24 @@ export default function InvoiceDetail() {
           {invoice.isInterState ? (
             <div className="flex justify-between text-sm">
               <span className="text-gray-600">IGST:</span>
-              <span className="font-semibold">₹{invoice.igst?.toFixed(2)}</span>
+              <span className="font-semibold">₹{invoice.totalGst?.igst?.toFixed(2)}</span>
             </div>
           ) : (
             <>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">CGST:</span>
-                <span className="font-semibold">₹{invoice.cgst?.toFixed(2)}</span>
+                <span className="font-semibold">₹{invoice.totalGst?.cgst?.toFixed(2)}</span>
               </div>
               <div className="flex justify-between text-sm">
                 <span className="text-gray-600">SGST:</span>
-                <span className="font-semibold">₹{invoice.sgst?.toFixed(2)}</span>
+                <span className="font-semibold">₹{invoice.totalGst?.sgst?.toFixed(2)}</span>
               </div>
             </>
           )}
 
           <div className="flex justify-between text-sm">
             <span className="text-gray-600">Total GST:</span>
-            <span className="font-semibold">₹{invoice.totalGST?.toFixed(2)}</span>
+            <span className="font-semibold">₹{invoice.totalGst?.total?.toFixed(2)}</span>
           </div>
 
           {invoice.discount > 0 && (
@@ -302,26 +303,32 @@ export default function InvoiceDetail() {
       </div>
 
       {/* E-Way Bill */}
-      {invoice.ewayBill && invoice.ewayBill.number && (
+      {(invoice.ewayBill?.number || invoice.eWayBill?.number) && (
         <div className="card">
           <h2 className="text-lg font-semibold mb-4">E-Way Bill Details</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
             <div>
               <span className="text-gray-600">E-Way Bill Number:</span>
-              <p className="font-semibold">{invoice.ewayBill.number}</p>
+              <p className="font-semibold">{invoice.ewayBill?.number || invoice.eWayBill?.number}</p>
             </div>
-            <div>
-              <span className="text-gray-600">Valid Until:</span>
-              <p className="font-semibold">{format(new Date(invoice.ewayBill.validUntil), 'dd MMM yyyy')}</p>
-            </div>
-            <div>
-              <span className="text-gray-600">Vehicle Number:</span>
-              <p className="font-semibold">{invoice.ewayBill.vehicleNumber}</p>
-            </div>
-            <div>
-              <span className="text-gray-600">Distance:</span>
-              <p className="font-semibold">{invoice.ewayBill.distance} km</p>
-            </div>
+            {(invoice.ewayBill?.validUntil || invoice.eWayBill?.validUpto) && (
+              <div>
+                <span className="text-gray-600">Valid Until:</span>
+                <p className="font-semibold">{format(new Date(invoice.ewayBill?.validUntil || invoice.eWayBill?.validUpto), 'dd MMM yyyy')}</p>
+              </div>
+            )}
+            {(invoice.ewayBill?.vehicleNumber) && (
+              <div>
+                <span className="text-gray-600">Vehicle Number:</span>
+                <p className="font-semibold">{invoice.ewayBill.vehicleNumber}</p>
+              </div>
+            )}
+            {(invoice.ewayBill?.distance) && (
+              <div>
+                <span className="text-gray-600">Distance:</span>
+                <p className="font-semibold">{invoice.ewayBill.distance} km</p>
+              </div>
+            )}
           </div>
         </div>
       )}
