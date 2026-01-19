@@ -57,7 +57,31 @@ export default function Transactions() {
   const handleCreateTransaction = async (e) => {
     e.preventDefault()
     try {
-      await transactionAPI.create(transactionData)
+      // Clean up the data before sending
+      const dataToSend = {
+        transactionType: transactionData.transactionType,
+        amount: transactionData.amount,
+        paymentMethod: transactionData.paymentMethod,
+        description: transactionData.description,
+        date: transactionData.date
+      }
+
+      // Only add customer if selected
+      if (transactionData.customer) {
+        dataToSend.customer = transactionData.customer
+      }
+
+      // Only add reference data if linking to invoice
+      if (transactionData.reference === 'invoice' && transactionData.referenceId) {
+        dataToSend.reference = 'invoice'
+        dataToSend.referenceId = transactionData.referenceId
+        dataToSend.referenceModel = 'Invoice'
+      } else {
+        // Set to 'direct' if not linking to invoice
+        dataToSend.reference = 'direct'
+      }
+
+      await transactionAPI.create(dataToSend)
       toast.success('Transaction recorded successfully')
       setShowTransactionModal(false)
       setTransactionData({
