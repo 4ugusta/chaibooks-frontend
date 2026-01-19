@@ -1,12 +1,13 @@
 import { useEffect, useState } from 'react'
-import { transactionAPI, customerAPI } from '../../services/api'
-import { ArrowLeftRight, Plus } from 'lucide-react'
+import { transactionAPI, customerAPI, invoiceAPI } from '../../services/api'
+import { ArrowLeftRight, Plus, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
 import toast from 'react-hot-toast'
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([])
   const [customers, setCustomers] = useState([])
+  const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
   const [showTransactionModal, setShowTransactionModal] = useState(false)
   const [transactionData, setTransactionData] = useState({
@@ -15,7 +16,9 @@ export default function Transactions() {
     paymentMethod: 'cash',
     customer: '',
     description: '',
-    date: new Date().toISOString().split('T')[0]
+    date: new Date().toISOString().split('T')[0],
+    reference: '',
+    referenceId: ''
   })
 
   useEffect(() => {
@@ -37,6 +40,20 @@ export default function Transactions() {
     }
   }
 
+  const loadInvoicesForCustomer = async (customerId) => {
+    if (!customerId) {
+      setInvoices([])
+      return
+    }
+    try {
+      const response = await invoiceAPI.getAll({ customer: customerId })
+      setInvoices(response.data.invoices || [])
+    } catch (error) {
+      console.error('Failed to load invoices:', error)
+      setInvoices([])
+    }
+  }
+
   const handleCreateTransaction = async (e) => {
     e.preventDefault()
     try {
@@ -49,12 +66,30 @@ export default function Transactions() {
         paymentMethod: 'cash',
         customer: '',
         description: '',
-        date: new Date().toISOString().split('T')[0]
+        date: new Date().toISOString().split('T')[0],
+        reference: '',
+        referenceId: ''
       })
+      setInvoices([])
       loadData()
     } catch (error) {
       console.error('Failed to create transaction:', error)
       toast.error('Failed to create transaction')
+    }
+  }
+
+  const handleDeleteTransaction = async (transactionId) => {
+    if (!window.confirm('Are you sure you want to delete this transaction? This will also update the linked invoice if applicable.')) {
+      return
+    }
+
+    try {
+      await transactionAPI.delete(transactionId)
+      toast.success('Transaction deleted successfully')
+      loadData()
+    } catch (error) {
+      console.error('Failed to delete transaction:', error)
+      toast.error('Failed to delete transaction')
     }
   }
 
@@ -100,6 +135,7 @@ export default function Transactions() {
                   <th>Amount</th>
                   <th>Description</th>
                   <th>Status</th>
+                  <th>Actions</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-gray-200">
@@ -124,6 +160,15 @@ export default function Transactions() {
                       }`}>
                         {transaction.status}
                       </span>
+                    </td>
+                    <td>
+                      <button
+                        onClick={() => handleDeleteTransaction(transaction._id)}
+                        className="text-red-600 hover:text-red-800 p-1"
+                        title="Delete transaction"
+                      >
+                        <Trash2 className="w-4 h-4" />
+                      </button>
                     </td>
                   </tr>
                 ))}
@@ -187,7 +232,11 @@ export default function Transactions() {
                 <label className="block text-sm font-medium text-gray-700 mb-1">Customer (Optional)</label>
                 <select
                   value={transactionData.customer}
-                  onChange={(e) => setTransactionData({ ...transactionData, customer: e.target.value })}
+                  onChange={(e) => {
+                    const customerId = e.target.value
+                    setTransactionData({ ...transactionData, customer: customerId, referenceId: '' })
+                    loadInvoicesForCustomer(customerId)
+                  }}
                   className="input"
                 >
                   <option value="">None</option>
@@ -198,6 +247,37 @@ export default function Transactions() {
                   ))}
                 </select>
               </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Link to Invoice? (Optional)</label>
+                <select
+                  value={transactionData.reference}
+                  onChange={(e) => setTransactionData({ ...transactionData, reference: e.target.value, referenceId: '' })}
+                  className="input"
+                >
+                  <option value="">No</option>
+                  <option value="invoice">Yes - Link to Invoice</option>
+                </select>
+              </div>
+
+              {transactionData.reference === 'invoice' && transactionData.customer && (
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Invoice *</label>
+                  <select
+                    value={transactionData.referenceId}
+                    onChange={(e) => setTransactionData({ ...transactionData, referenceId: e.target.value })}
+                    className="input"
+                    required
+                  >
+                    <option value="">Select an invoice</option>
+                    {invoices.map(invoice => (
+                      <option key={invoice._id} value={invoice._id}>
+                        {invoice.invoiceNumber} - ₹{invoice.grandTotal?.toFixed(2)} ({invoice.paymentStatus})
+                      </option>
+                    ))}
+                  </select>
+                </div>
+              )}
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
