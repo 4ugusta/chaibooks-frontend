@@ -1,8 +1,87 @@
-import { useNavigate } from 'react-router-dom'
+import { useEffect, useState } from 'react'
+import { useNavigate, useParams } from 'react-router-dom'
+import { itemAPI } from '../../services/api'
+import toast from 'react-hot-toast'
 import { ArrowLeft } from 'lucide-react'
 
 export default function ItemForm() {
   const navigate = useNavigate()
+  const { id } = useParams()
+  const isEdit = Boolean(id)
+
+  const [formData, setFormData] = useState({
+    name: '',
+    description: '',
+    category: 'tea',
+    hsnCode: '',
+    unit: 'kg',
+    pricing: {
+      basePrice: 0,
+      sellingPrice: 0,
+      purchasePrice: 0
+    },
+    gst: {
+      rate: 5
+    },
+    stock: {
+      quantity: 0,
+      weight: 0,
+      bags: 0,
+      minStockLevel: 0
+    }
+  })
+  const [loading, setLoading] = useState(false)
+
+  useEffect(() => {
+    if (isEdit) {
+      loadItem()
+    }
+  }, [id])
+
+  const loadItem = async () => {
+    try {
+      const response = await itemAPI.getOne(id)
+      setFormData(response.data)
+    } catch (error) {
+      toast.error('Failed to load item')
+      navigate('/items')
+    }
+  }
+
+  const handleSubmit = async (e) => {
+    e.preventDefault()
+    setLoading(true)
+
+    try {
+      if (isEdit) {
+        await itemAPI.update(id, formData)
+        toast.success('Item updated successfully')
+      } else {
+        await itemAPI.create(formData)
+        toast.success('Item created successfully')
+      }
+      navigate('/items')
+    } catch (error) {
+      console.error('Failed to save item:', error)
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  const handleChange = (e) => {
+    const { name, value } = e.target
+    setFormData({ ...formData, [name]: value })
+  }
+
+  const handleNestedChange = (parent, field, value) => {
+    setFormData({
+      ...formData,
+      [parent]: {
+        ...formData[parent],
+        [field]: value
+      }
+    })
+  }
 
   return (
     <div className="space-y-6">
@@ -10,10 +89,202 @@ export default function ItemForm() {
         <button onClick={() => navigate('/items')} className="btn btn-secondary">
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-3xl font-bold">Add Item</h1>
+        <h1 className="text-3xl font-bold">{isEdit ? 'Edit' : 'Add'} Item</h1>
       </div>
-      <div className="card">
-        <p className="text-gray-600">Item form page. Add item details like name, weight, price, HSN code, GST rate, etc.</p>
+
+      <div className="card max-w-4xl">
+        <form onSubmit={handleSubmit} className="space-y-6">
+          {/* Basic Info */}
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+              <input
+                type="text"
+                name="name"
+                value={formData.name}
+                onChange={handleChange}
+                className="input"
+                required
+              />
+            </div>
+
+            <div className="md:col-span-2">
+              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <textarea
+                name="description"
+                value={formData.description}
+                onChange={handleChange}
+                className="input"
+                rows={2}
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+              <select
+                name="category"
+                value={formData.category}
+                onChange={handleChange}
+                className="input"
+                required
+              >
+                <option value="tea">Tea</option>
+                <option value="accessories">Accessories</option>
+                <option value="packaging">Packaging</option>
+                <option value="other">Other</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">HSN Code *</label>
+              <input
+                type="text"
+                name="hsnCode"
+                value={formData.hsnCode}
+                onChange={handleChange}
+                className="input"
+                placeholder="09023010"
+                required
+              />
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">Unit *</label>
+              <select
+                name="unit"
+                value={formData.unit}
+                onChange={handleChange}
+                className="input"
+                required
+              >
+                <option value="kg">Kilogram (kg)</option>
+                <option value="gram">Gram</option>
+                <option value="bags">Bags</option>
+                <option value="pieces">Pieces</option>
+                <option value="litre">Litre</option>
+              </select>
+            </div>
+
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">GST Rate * (%)</label>
+              <select
+                name="gstRate"
+                value={formData.gst.rate}
+                onChange={(e) => handleNestedChange('gst', 'rate', Number(e.target.value))}
+                className="input"
+                required
+              >
+                <option value={0}>0%</option>
+                <option value={5}>5%</option>
+                <option value={12}>12%</option>
+                <option value={18}>18%</option>
+                <option value={28}>28%</option>
+              </select>
+            </div>
+          </div>
+
+          {/* Pricing */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Pricing</h3>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Base Price (₹)</label>
+                <input
+                  type="number"
+                  value={formData.pricing.basePrice}
+                  onChange={(e) => handleNestedChange('pricing', 'basePrice', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (₹) *</label>
+                <input
+                  type="number"
+                  value={formData.pricing.sellingPrice}
+                  onChange={(e) => handleNestedChange('pricing', 'sellingPrice', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price (₹)</label>
+                <input
+                  type="number"
+                  value={formData.pricing.purchasePrice}
+                  onChange={(e) => handleNestedChange('pricing', 'purchasePrice', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+            </div>
+          </div>
+
+          {/* Stock */}
+          <div>
+            <h3 className="text-lg font-semibold mb-3">Stock</h3>
+            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                <input
+                  type="number"
+                  value={formData.stock.quantity}
+                  onChange={(e) => handleNestedChange('stock', 'quantity', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
+                <input
+                  type="number"
+                  value={formData.stock.weight}
+                  onChange={(e) => handleNestedChange('stock', 'weight', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                  step="0.01"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Bags</label>
+                <input
+                  type="number"
+                  value={formData.stock.bags}
+                  onChange={(e) => handleNestedChange('stock', 'bags', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Min Stock Level</label>
+                <input
+                  type="number"
+                  value={formData.stock.minStockLevel}
+                  onChange={(e) => handleNestedChange('stock', 'minStockLevel', Number(e.target.value))}
+                  className="input"
+                  min="0"
+                />
+              </div>
+            </div>
+          </div>
+
+          <div className="flex gap-4 pt-4">
+            <button type="submit" disabled={loading} className="btn btn-primary flex-1">
+              {loading ? 'Saving...' : isEdit ? 'Update Item' : 'Create Item'}
+            </button>
+            <button
+              type="button"
+              onClick={() => navigate('/items')}
+              className="btn btn-secondary"
+            >
+              Cancel
+            </button>
+          </div>
+        </form>
       </div>
     </div>
   )

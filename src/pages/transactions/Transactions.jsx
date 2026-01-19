@@ -1,24 +1,60 @@
 import { useEffect, useState } from 'react'
-import { transactionAPI } from '../../services/api'
-import { ArrowLeftRight } from 'lucide-react'
+import { transactionAPI, customerAPI } from '../../services/api'
+import { ArrowLeftRight, Plus } from 'lucide-react'
 import { format } from 'date-fns'
+import toast from 'react-hot-toast'
 
 export default function Transactions() {
   const [transactions, setTransactions] = useState([])
+  const [customers, setCustomers] = useState([])
   const [loading, setLoading] = useState(true)
+  const [showTransactionModal, setShowTransactionModal] = useState(false)
+  const [transactionData, setTransactionData] = useState({
+    transactionType: 'payment_received',
+    amount: 0,
+    paymentMethod: 'cash',
+    customer: '',
+    description: '',
+    date: new Date().toISOString().split('T')[0]
+  })
 
   useEffect(() => {
-    loadTransactions()
+    loadData()
   }, [])
 
-  const loadTransactions = async () => {
+  const loadData = async () => {
     try {
-      const response = await transactionAPI.getAll()
-      setTransactions(response.data.transactions || [])
+      const [transactionsRes, customersRes] = await Promise.all([
+        transactionAPI.getAll(),
+        customerAPI.getAll()
+      ])
+      setTransactions(transactionsRes.data.transactions || [])
+      setCustomers(customersRes.data.customers || [])
     } catch (error) {
-      console.error('Failed to load transactions:', error)
+      console.error('Failed to load data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleCreateTransaction = async (e) => {
+    e.preventDefault()
+    try {
+      await transactionAPI.create(transactionData)
+      toast.success('Transaction recorded successfully')
+      setShowTransactionModal(false)
+      setTransactionData({
+        transactionType: 'payment_received',
+        amount: 0,
+        paymentMethod: 'cash',
+        customer: '',
+        description: '',
+        date: new Date().toISOString().split('T')[0]
+      })
+      loadData()
+    } catch (error) {
+      console.error('Failed to create transaction:', error)
+      toast.error('Failed to create transaction')
     }
   }
 
@@ -36,7 +72,13 @@ export default function Transactions() {
 
   return (
     <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Transactions</h1>
+      <div className="flex items-center justify-between">
+        <h1 className="text-3xl font-bold">Transactions</h1>
+        <button onClick={() => setShowTransactionModal(true)} className="btn btn-primary">
+          <Plus className="w-4 h-4 mr-2" />
+          Record Transaction
+        </button>
+      </div>
 
       <div className="card">
         {loading ? (
@@ -90,6 +132,112 @@ export default function Transactions() {
           </div>
         )}
       </div>
+
+      {/* Transaction Modal */}
+      {showTransactionModal && (
+        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
+            <h2 className="text-xl font-semibold mb-4">Record Transaction</h2>
+            <form onSubmit={handleCreateTransaction} className="space-y-4">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Transaction Type *</label>
+                <select
+                  value={transactionData.transactionType}
+                  onChange={(e) => setTransactionData({ ...transactionData, transactionType: e.target.value })}
+                  className="input"
+                  required
+                >
+                  <option value="payment_received">Payment Received</option>
+                  <option value="payment_made">Payment Made</option>
+                  <option value="expense">Expense</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹) *</label>
+                <input
+                  type="number"
+                  value={transactionData.amount}
+                  onChange={(e) => setTransactionData({ ...transactionData, amount: parseFloat(e.target.value) })}
+                  className="input"
+                  min="0"
+                  step="0.01"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+                <select
+                  value={transactionData.paymentMethod}
+                  onChange={(e) => setTransactionData({ ...transactionData, paymentMethod: e.target.value })}
+                  className="input"
+                  required
+                >
+                  <option value="cash">Cash</option>
+                  <option value="upi">UPI</option>
+                  <option value="cheque">Cheque</option>
+                  <option value="neft">NEFT</option>
+                  <option value="rtgs">RTGS</option>
+                  <option value="card">Card</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Customer (Optional)</label>
+                <select
+                  value={transactionData.customer}
+                  onChange={(e) => setTransactionData({ ...transactionData, customer: e.target.value })}
+                  className="input"
+                >
+                  <option value="">None</option>
+                  {customers.map(customer => (
+                    <option key={customer._id} value={customer._id}>
+                      {customer.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                <input
+                  type="date"
+                  value={transactionData.date}
+                  onChange={(e) => setTransactionData({ ...transactionData, date: e.target.value })}
+                  className="input"
+                  required
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <textarea
+                  value={transactionData.description}
+                  onChange={(e) => setTransactionData({ ...transactionData, description: e.target.value })}
+                  className="input"
+                  rows={3}
+                  placeholder="Payment details, expense notes, etc."
+                  required
+                />
+              </div>
+
+              <div className="flex gap-4 pt-4">
+                <button type="submit" className="btn btn-primary flex-1">
+                  Record Transaction
+                </button>
+                <button
+                  type="button"
+                  onClick={() => setShowTransactionModal(false)}
+                  className="btn btn-secondary"
+                >
+                  Cancel
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   )
 }
