@@ -68,17 +68,22 @@ export default function InvoiceForm() {
   const handleSubmit = async (e) => {
     e.preventDefault()
 
+    // Prevent double submission
+    if (loading) return
+    setLoading(true)
+
     if (!formData.customer) {
       toast.error('Please select a customer')
+      setLoading(false)
       return
     }
 
     if (formData.items.length === 0 || !formData.items[0].item) {
       toast.error('Please add at least one item')
+      setLoading(false)
       return
     }
 
-    setLoading(true)
     try {
       if (isEdit) {
         await invoiceAPI.update(id, formData)
