@@ -323,7 +323,6 @@ export default function Reports() {
                       <th>Item</th>
                       <th>Category</th>
                       <th>Quantity</th>
-                      <th>Weight (kg)</th>
                       <th>Bags</th>
                       <th>Min Level</th>
                       <th>Status</th>
@@ -335,7 +334,6 @@ export default function Reports() {
                         <td className="font-medium">{item.name}</td>
                         <td className="capitalize">{item.category}</td>
                         <td>{item.stock?.quantity || 0}</td>
-                        <td>{item.stock?.weight?.toFixed(2) || 0}</td>
                         <td>{item.stock?.bags || 0}</td>
                         <td>{item.stock?.minStockLevel || 0}</td>
                         <td>

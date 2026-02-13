@@ -25,7 +25,6 @@ export default function ItemForm() {
     },
     stock: {
       quantity: 0,
-      weight: 0,
       bags: 0,
       minStockLevel: 0
     }
@@ -81,6 +80,17 @@ export default function ItemForm() {
         [field]: value
       }
     })
+  }
+
+  // For number inputs: allow empty string while typing, convert to number on blur
+  const handleNumberChange = (parent, field, rawValue) => {
+    handleNestedChange(parent, field, rawValue === '' ? '' : Number(rawValue))
+  }
+  const handleNumberBlur = (parent, field) => {
+    const val = formData[parent][field]
+    if (val === '' || isNaN(val)) {
+      handleNestedChange(parent, field, 0)
+    }
   }
 
   return (
@@ -192,7 +202,8 @@ export default function ItemForm() {
                 <input
                   type="number"
                   value={formData.pricing.basePrice}
-                  onChange={(e) => handleNestedChange('pricing', 'basePrice', Number(e.target.value))}
+                  onChange={(e) => handleNumberChange('pricing', 'basePrice', e.target.value)}
+                  onBlur={() => handleNumberBlur('pricing', 'basePrice')}
                   className="input"
                   min="0"
                   step="0.01"
@@ -203,7 +214,8 @@ export default function ItemForm() {
                 <input
                   type="number"
                   value={formData.pricing.sellingPrice}
-                  onChange={(e) => handleNestedChange('pricing', 'sellingPrice', Number(e.target.value))}
+                  onChange={(e) => handleNumberChange('pricing', 'sellingPrice', e.target.value)}
+                  onBlur={() => handleNumberBlur('pricing', 'sellingPrice')}
                   className="input"
                   min="0"
                   step="0.01"
@@ -215,7 +227,8 @@ export default function ItemForm() {
                 <input
                   type="number"
                   value={formData.pricing.purchasePrice}
-                  onChange={(e) => handleNestedChange('pricing', 'purchasePrice', Number(e.target.value))}
+                  onChange={(e) => handleNumberChange('pricing', 'purchasePrice', e.target.value)}
+                  onBlur={() => handleNumberBlur('pricing', 'purchasePrice')}
                   className="input"
                   min="0"
                   step="0.01"
@@ -227,26 +240,16 @@ export default function ItemForm() {
           {/* Stock */}
           <div>
             <h3 className="text-lg font-semibold mb-3">Stock</h3>
-            <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity</label>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity ({formData.unit})</label>
                 <input
                   type="number"
                   value={formData.stock.quantity}
-                  onChange={(e) => handleNestedChange('stock', 'quantity', Number(e.target.value))}
+                  onChange={(e) => handleNumberChange('stock', 'quantity', e.target.value)}
+                  onBlur={() => handleNumberBlur('stock', 'quantity')}
                   className="input"
                   min="0"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Weight (kg)</label>
-                <input
-                  type="number"
-                  value={formData.stock.weight}
-                  onChange={(e) => handleNestedChange('stock', 'weight', Number(e.target.value))}
-                  className="input"
-                  min="0"
-                  step="0.01"
                 />
               </div>
               <div>
@@ -254,7 +257,8 @@ export default function ItemForm() {
                 <input
                   type="number"
                   value={formData.stock.bags}
-                  onChange={(e) => handleNestedChange('stock', 'bags', Number(e.target.value))}
+                  onChange={(e) => handleNumberChange('stock', 'bags', e.target.value)}
+                  onBlur={() => handleNumberBlur('stock', 'bags')}
                   className="input"
                   min="0"
                 />
@@ -264,7 +268,8 @@ export default function ItemForm() {
                 <input
                   type="number"
                   value={formData.stock.minStockLevel}
-                  onChange={(e) => handleNestedChange('stock', 'minStockLevel', Number(e.target.value))}
+                  onChange={(e) => handleNumberChange('stock', 'minStockLevel', e.target.value)}
+                  onBlur={() => handleNumberBlur('stock', 'minStockLevel')}
                   className="input"
                   min="0"
                 />

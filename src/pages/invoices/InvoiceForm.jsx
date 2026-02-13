@@ -239,7 +239,8 @@ export default function InvoiceForm() {
               <input
                 type="number"
                 value={formData.discount}
-                onChange={(e) => setFormData({ ...formData, discount: parseFloat(e.target.value) || 0 })}
+                onChange={(e) => setFormData({ ...formData, discount: e.target.value === '' ? '' : parseFloat(e.target.value) })}
+                onBlur={(e) => { if (e.target.value === '') setFormData(prev => ({ ...prev, discount: 0 })) }}
                 className="input"
                 min="0"
                 step="0.01"
@@ -292,7 +293,8 @@ export default function InvoiceForm() {
                         <input
                           type="number"
                           value={lineItem.quantity}
-                          onChange={(e) => handleItemChange(index, 'quantity', parseFloat(e.target.value) || 0)}
+                          onChange={(e) => handleItemChange(index, 'quantity', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                          onBlur={(e) => { if (e.target.value === '') handleItemChange(index, 'quantity', 0) }}
                           className="input"
                           min="0.01"
                           step="0.01"
@@ -305,7 +307,8 @@ export default function InvoiceForm() {
                         <input
                           type="number"
                           value={lineItem.rate}
-                          onChange={(e) => handleItemChange(index, 'rate', parseFloat(e.target.value) || 0)}
+                          onChange={(e) => handleItemChange(index, 'rate', e.target.value === '' ? '' : parseFloat(e.target.value))}
+                          onBlur={(e) => { if (e.target.value === '') handleItemChange(index, 'rate', 0) }}
                           className="input"
                           min="0"
                           step="0.01"
