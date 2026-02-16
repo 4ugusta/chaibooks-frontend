@@ -111,28 +111,53 @@ export default function Dashboard() {
       </div>
 
       {stats.profitLoss && (
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-          <div className="card">
-            <h3 className="text-lg font-semibold mb-2">Revenue</h3>
-            <p className="text-xl lg:text-2xl font-bold text-green-600 truncate"
-               title={`₹${stats.profitLoss.revenue.toFixed(2)}`}>
-              {formatCurrency(stats.profitLoss.revenue)}
-            </p>
+        <>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-2">Revenue</h3>
+              <p className="text-xl lg:text-2xl font-bold text-green-600 truncate"
+                 title={`₹${stats.profitLoss.revenue.toFixed(2)}`}>
+                {formatCurrency(stats.profitLoss.revenue)}
+              </p>
+            </div>
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-2">Collected</h3>
+              <p className="text-xl lg:text-2xl font-bold text-green-700 truncate"
+                 title={`₹${stats.profitLoss.totalCollected.toFixed(2)}`}>
+                {formatCurrency(stats.profitLoss.totalCollected)}
+              </p>
+            </div>
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-2">Due</h3>
+              <p className="text-xl lg:text-2xl font-bold text-orange-600 truncate"
+                 title={`₹${stats.profitLoss.totalDue.toFixed(2)}`}>
+                {formatCurrency(stats.profitLoss.totalDue)}
+              </p>
+            </div>
           </div>
-          <div className="card">
-            <h3 className="text-lg font-semibold mb-2">Expenses</h3>
-            <p className="text-xl lg:text-2xl font-bold text-red-600 truncate"
-               title={`₹${stats.profitLoss.cost.toFixed(2)}`}>
-              {formatCurrency(stats.profitLoss.cost)}
-            </p>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-2">Purchases</h3>
+              <p className="text-xl lg:text-2xl font-bold text-red-600 truncate"
+                 title={`₹${stats.profitLoss.cost.toFixed(2)}`}>
+                {formatCurrency(stats.profitLoss.cost)}
+              </p>
+            </div>
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-2">Expenses</h3>
+              <p className="text-xl lg:text-2xl font-bold text-red-600 truncate"
+                 title={`₹${stats.profitLoss.expenses.toFixed(2)}`}>
+                {formatCurrency(stats.profitLoss.expenses)}
+              </p>
+            </div>
+            <div className="card">
+              <h3 className="text-lg font-semibold mb-2">Profit Margin</h3>
+              <p className="text-xl lg:text-2xl font-bold text-blue-600">
+                {stats.profitLoss.profitMargin.toFixed(2)}%
+              </p>
+            </div>
           </div>
-          <div className="card">
-            <h3 className="text-lg font-semibold mb-2">Profit Margin</h3>
-            <p className="text-xl lg:text-2xl font-bold text-blue-600">
-              {stats.profitLoss.profitMargin.toFixed(2)}%
-            </p>
-          </div>
-        </div>
+        </>
       )}
 
       <div className="card">
