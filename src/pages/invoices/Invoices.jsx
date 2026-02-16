@@ -1,8 +1,9 @@
 import { useEffect, useState } from 'react'
 import { Link } from 'react-router-dom'
 import { invoiceAPI } from '../../services/api'
-import { Plus, Search, Eye, Download, FileText } from 'lucide-react'
+import { Plus, Search, Eye, Download, FileText, Trash2 } from 'lucide-react'
 import { format } from 'date-fns'
+import toast from 'react-hot-toast'
 
 export default function Invoices() {
   const [invoices, setInvoices] = useState([])
@@ -36,6 +37,20 @@ export default function Invoices() {
         {status.toUpperCase()}
       </span>
     )
+  }
+
+  const handleDelete = async (id, invoiceNumber) => {
+    if (!window.confirm(`Delete invoice ${invoiceNumber}? Stock will be restored and linked payments/transactions will be removed.`)) {
+      return
+    }
+    try {
+      await invoiceAPI.delete(id)
+      toast.success('Invoice deleted successfully')
+      setInvoices(invoices.filter(inv => inv._id !== id))
+    } catch (error) {
+      console.error('Failed to delete invoice:', error)
+      toast.error('Failed to delete invoice')
+    }
   }
 
   const handleDownloadPDF = async (id, invoiceNumber) => {
@@ -121,6 +136,13 @@ export default function Invoices() {
                           title="Download PDF"
                         >
                           <Download className="w-4 h-4" />
+                        </button>
+                        <button
+                          onClick={() => handleDelete(invoice._id, invoice.invoiceNumber)}
+                          className="text-red-600 hover:text-red-800"
+                          title="Delete Invoice"
+                        >
+                          <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
                     </td>

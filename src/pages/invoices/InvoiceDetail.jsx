@@ -84,6 +84,20 @@ export default function InvoiceDetail() {
     }
   }
 
+  const handleDeleteInvoice = async () => {
+    if (!window.confirm('Are you sure you want to delete this invoice? Stock will be restored and linked payments/transactions will be removed.')) {
+      return
+    }
+    try {
+      await invoiceAPI.delete(id)
+      toast.success('Invoice deleted successfully')
+      navigate('/invoices')
+    } catch (error) {
+      console.error('Failed to delete invoice:', error)
+      toast.error('Failed to delete invoice')
+    }
+  }
+
   const handleDeletePayment = async (paymentId) => {
     if (!window.confirm('Are you sure you want to delete this payment? This will also delete the linked transaction.')) {
       return
@@ -157,6 +171,10 @@ export default function InvoiceDetail() {
               E-Way Bill
             </button>
           )}
+          <button onClick={handleDeleteInvoice} className="btn btn-danger">
+            <Trash2 className="w-4 h-4 mr-2" />
+            Delete
+          </button>
         </div>
       </div>
 
