@@ -96,7 +96,11 @@ export const reportAPI = {
   getGST: (params) => api.get('/reports/gst', { params }),
   getProfitLoss: (params) => api.get('/reports/profit-loss', { params }),
   getStock: (params) => api.get('/reports/stock', { params }),
-  getCustomers: () => api.get('/reports/customers')
+  getCustomers: () => api.get('/reports/customers'),
+  downloadSalesPDF: (params) => api.get('/reports/sales/pdf', { params, responseType: 'blob' }),
+  downloadPurchasesPDF: (params) => api.get('/reports/purchases/pdf', { params, responseType: 'blob' }),
+  downloadStockPDF: () => api.get('/reports/stock/pdf', { responseType: 'blob' }),
+  downloadGSTPDF: (params) => api.get('/reports/gst/pdf', { params, responseType: 'blob' })
 }
 
 export default api
