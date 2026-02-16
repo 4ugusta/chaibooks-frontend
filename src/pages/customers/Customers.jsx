@@ -73,7 +73,7 @@ export default function Customers() {
               <thead>
                 <tr>
                   <th>Name</th>
-                  <th>GSTIN</th>
+                  <th>GSTIN / PAN</th>
                   <th>Phone</th>
                   <th>Email</th>
                   <th>Outstanding</th>
@@ -84,7 +84,7 @@ export default function Customers() {
                 {customers.map((customer) => (
                   <tr key={customer._id}>
                     <td className="font-medium">{customer.name}</td>
-                    <td>{customer.gstin}</td>
+                    <td>{customer.gstin || customer.pan || '-'}</td>
                     <td>{customer.contact.phone}</td>
                     <td>{customer.contact.email || '-'}</td>
                     <td>₹{customer.outstandingBalance?.toFixed(2) || '0.00'}</td>

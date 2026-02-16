@@ -12,6 +12,7 @@ export default function CustomerForm() {
   const [formData, setFormData] = useState({
     name: '',
     gstin: '',
+    pan: '',
     contact: { phone: '', email: '' },
     address: { street: '', city: '', state: '', pincode: '' }
   })
@@ -75,17 +76,32 @@ export default function CustomerForm() {
             />
           </div>
 
-          <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN *</label>
-            <input
-              type="text"
-              value={formData.gstin}
-              onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
-              className="input"
-              pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
-              placeholder="22AAAAA0000A1Z5"
-              required
-            />
+          <div className="grid grid-cols-2 gap-4">
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN {!formData.pan && '*'}</label>
+              <input
+                type="text"
+                value={formData.gstin}
+                onChange={(e) => setFormData({ ...formData, gstin: e.target.value.toUpperCase() })}
+                className="input"
+                pattern="^[0-9]{2}[A-Z]{5}[0-9]{4}[A-Z]{1}[1-9A-Z]{1}Z[0-9A-Z]{1}$"
+                placeholder="22AAAAA0000A1Z5"
+                required={!formData.pan}
+              />
+            </div>
+            <div>
+              <label className="block text-sm font-medium text-gray-700 mb-1">PAN {!formData.gstin && '*'}</label>
+              <input
+                type="text"
+                value={formData.pan}
+                onChange={(e) => setFormData({ ...formData, pan: e.target.value.toUpperCase() })}
+                className="input"
+                pattern="^[A-Z]{5}[0-9]{4}[A-Z]{1}$"
+                placeholder="ABCDE1234F"
+                required={!formData.gstin}
+              />
+            </div>
+            <p className="col-span-2 text-xs text-gray-500 -mt-3">At least one of GSTIN or PAN is required</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">

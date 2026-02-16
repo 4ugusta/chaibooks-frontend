@@ -196,10 +196,18 @@ export default function InvoiceDetail() {
                 <span className="text-gray-600">Name:</span>
                 <p className="font-semibold">{invoice.customer?.name}</p>
               </div>
-              <div>
-                <span className="text-gray-600">GSTIN:</span>
-                <p className="font-semibold">{invoice.customer?.gstin || 'N/A'}</p>
-              </div>
+              {invoice.customer?.gstin && (
+                <div>
+                  <span className="text-gray-600">GSTIN:</span>
+                  <p className="font-semibold">{invoice.customer.gstin}</p>
+                </div>
+              )}
+              {invoice.customer?.pan && (
+                <div>
+                  <span className="text-gray-600">PAN:</span>
+                  <p className="font-semibold">{invoice.customer.pan}</p>
+                </div>
+              )}
               <div>
                 <span className="text-gray-600">Contact:</span>
                 <p className="font-semibold">{invoice.customer?.contact?.phone}</p>
