@@ -1,12 +1,16 @@
+import colors from 'tailwindcss/colors'
+
 /** @type {import('tailwindcss').Config} */
 export default {
   content: [
     "./index.html",
     "./src/**/*.{js,ts,jsx,tsx}",
   ],
+  darkMode: 'class',
   theme: {
     extend: {
       colors: {
+        gray: colors.stone,
         primary: {
           50: '#f0fdf4',
           100: '#dcfce7',
@@ -19,6 +23,10 @@ export default {
           800: '#166534',
           900: '#14532d',
         },
+        success: colors.emerald,
+        danger: colors.red,
+        warning: colors.amber,
+        info: colors.blue,
       },
     },
   },

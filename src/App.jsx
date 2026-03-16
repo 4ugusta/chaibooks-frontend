@@ -1,25 +1,26 @@
+import { lazy, Suspense } from 'react'
 import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom'
 import { Toaster } from 'react-hot-toast'
 import { useAuthStore } from './stores/authStore'
 
-// Layouts
+// Layouts (always loaded — they wrap everything)
 import Layout from './components/layout/Layout'
 import AuthLayout from './components/layout/AuthLayout'
 
-// Pages
-import Login from './pages/auth/Login'
-import Register from './pages/auth/Register'
-import Dashboard from './pages/Dashboard'
-import Customers from './pages/customers/Customers'
-import CustomerForm from './pages/customers/CustomerForm'
-import Items from './pages/items/Items'
-import ItemForm from './pages/items/ItemForm'
-import Invoices from './pages/invoices/Invoices'
-import InvoiceForm from './pages/invoices/InvoiceForm'
-import InvoiceDetail from './pages/invoices/InvoiceDetail'
-import Transactions from './pages/transactions/Transactions'
-import Reports from './pages/reports/Reports'
-import Settings from './pages/Settings'
+// Pages — lazy loaded per route
+const Login = lazy(() => import('./pages/auth/Login'))
+const Register = lazy(() => import('./pages/auth/Register'))
+const Dashboard = lazy(() => import('./pages/Dashboard'))
+const Customers = lazy(() => import('./pages/customers/Customers'))
+const CustomerForm = lazy(() => import('./pages/customers/CustomerForm'))
+const Items = lazy(() => import('./pages/items/Items'))
+const ItemForm = lazy(() => import('./pages/items/ItemForm'))
+const Invoices = lazy(() => import('./pages/invoices/Invoices'))
+const InvoiceForm = lazy(() => import('./pages/invoices/InvoiceForm'))
+const InvoiceDetail = lazy(() => import('./pages/invoices/InvoiceDetail'))
+const Transactions = lazy(() => import('./pages/transactions/Transactions'))
+const Reports = lazy(() => import('./pages/reports/Reports'))
+const Settings = lazy(() => import('./pages/Settings'))
 
 function PrivateRoute({ children }) {
   const { user } = useAuthStore()
@@ -31,10 +32,19 @@ function PublicRoute({ children }) {
   return !user ? children : <Navigate to="/" />
 }
 
+function PageLoader() {
+  return (
+    <div className="flex items-center justify-center min-h-[50vh]">
+      <div className="text-gray-500 dark:text-gray-400">Loading...</div>
+    </div>
+  )
+}
+
 function App() {
   return (
     <>
       <Router>
+        <Suspense fallback={<PageLoader />}>
         <Routes>
           {/* Public Routes */}
           <Route element={<AuthLayout />}>
@@ -95,6 +105,7 @@ function App() {
           {/* 404 */}
           <Route path="*" element={<Navigate to="/" />} />
         </Routes>
+        </Suspense>
       </Router>
       <Toaster position="top-right" />
     </>

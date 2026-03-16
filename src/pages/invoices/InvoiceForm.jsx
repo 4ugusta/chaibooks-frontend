@@ -60,7 +60,7 @@ export default function InvoiceForm() {
         })
       }
     } catch (error) {
-      console.error('Failed to load data:', error)
+
       toast.error('Failed to load form data')
     }
   }
@@ -94,7 +94,7 @@ export default function InvoiceForm() {
       }
       navigate('/invoices')
     } catch (error) {
-      console.error('Failed to save invoice:', error)
+
       toast.error(error.response?.data?.error || 'Failed to save invoice')
     } finally {
       setLoading(false)
@@ -165,11 +165,11 @@ export default function InvoiceForm() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 md:gap-4">
         <button onClick={() => navigate('/invoices')} className="btn btn-secondary">
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-3xl font-bold">{isEdit ? 'Edit' : 'Create'} Invoice</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{isEdit ? 'Edit' : 'Create'} Invoice</h1>
       </div>
 
       <form onSubmit={handleSubmit} className="space-y-6">
@@ -178,7 +178,7 @@ export default function InvoiceForm() {
           <h2 className="text-lg font-semibold mb-4">Invoice Information</h2>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Customer *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer *</label>
               <select
                 value={formData.customer}
                 onChange={(e) => setFormData({ ...formData, customer: e.target.value })}
@@ -193,14 +193,14 @@ export default function InvoiceForm() {
                 ))}
               </select>
               {selectedCustomer && (
-                <p className="text-xs text-gray-500 mt-1">
+                <p className="text-xs text-gray-500 dark:text-gray-400 mt-1">
                   {selectedCustomer.location?.state} {isInterState ? '(Inter-state - IGST)' : '(Intra-state - CGST+SGST)'}
                 </p>
               )}
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Date *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Date *</label>
               <input
                 type="date"
                 value={formData.invoiceDate}
@@ -211,7 +211,7 @@ export default function InvoiceForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Due Date *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Due Date *</label>
               <input
                 type="date"
                 value={formData.dueDate}
@@ -222,7 +222,7 @@ export default function InvoiceForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Invoice Type *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Invoice Type *</label>
               <select
                 value={formData.invoiceType}
                 onChange={(e) => setFormData({ ...formData, invoiceType: e.target.value })}
@@ -235,7 +235,7 @@ export default function InvoiceForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Discount (₹)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Discount (₹)</label>
               <input
                 type="number"
                 value={formData.discount}
@@ -268,11 +268,11 @@ export default function InvoiceForm() {
               const totalWithGST = itemTotal + gstAmount
 
               return (
-                <div key={index} className="border rounded-lg p-4 space-y-3">
-                  <div className="flex items-start gap-4">
-                    <div className="flex-1 grid grid-cols-1 md:grid-cols-5 gap-3">
-                      <div className="md:col-span-2">
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Item *</label>
+                <div key={index} className="border dark:border-gray-700 rounded-xl p-3 md:p-4 space-y-3">
+                  <div className="flex items-start gap-2 md:gap-4">
+                    <div className="flex-1 min-w-0 grid grid-cols-2 md:grid-cols-5 gap-2 md:gap-3">
+                      <div className="col-span-2 md:col-span-2">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Item *</label>
                         <select
                           value={lineItem.item}
                           onChange={(e) => handleItemChange(index, 'item', e.target.value)}
@@ -289,7 +289,7 @@ export default function InvoiceForm() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Quantity *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Qty *</label>
                         <input
                           type="number"
                           value={lineItem.quantity}
@@ -303,7 +303,7 @@ export default function InvoiceForm() {
                       </div>
 
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Rate (₹) *</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Rate (₹) *</label>
                         <input
                           type="number"
                           value={lineItem.rate}
@@ -316,8 +316,8 @@ export default function InvoiceForm() {
                         />
                       </div>
 
-                      <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Unit</label>
+                      <div className="hidden md:block">
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit</label>
                         <input
                           type="text"
                           value={lineItem.unit}
@@ -331,15 +331,15 @@ export default function InvoiceForm() {
                     <button
                       type="button"
                       onClick={() => handleRemoveItem(index)}
-                      className="text-red-600 hover:text-red-800 mt-7"
-                      title="Remove Item"
+                      className="btn-icon text-danger-600 hover:text-danger-800 dark:text-danger-400 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/20 mt-6 flex-shrink-0"
+                      aria-label="Remove item"
                     >
-                      <Trash2 className="w-5 h-5" />
+                      <Trash2 className="w-4 h-4 md:w-5 md:h-5" />
                     </button>
                   </div>
 
                   <div>
-                    <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+                    <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
                     <input
                       type="text"
                       value={lineItem.description}
@@ -350,13 +350,13 @@ export default function InvoiceForm() {
                   </div>
 
                   {selectedItem && (
-                    <div className="flex justify-between text-sm bg-gray-50 p-3 rounded">
-                      <span className="text-gray-600">
-                        HSN: <span className="font-semibold">{selectedItem.hsnCode}</span> |
-                        GST: <span className="font-semibold">{gstRate}%</span>
+                    <div className="flex flex-col sm:flex-row sm:justify-between gap-1 text-sm bg-gray-50 dark:bg-gray-700/50 p-3 rounded-xl">
+                      <span className="text-gray-600 dark:text-gray-400">
+                        HSN: <span className="font-semibold">{selectedItem.hsnCode}</span> | GST: <span className="font-semibold">{gstRate}%</span>
+                        <span className="inline md:hidden"> | {lineItem.unit}</span>
                       </span>
-                      <span className="text-gray-600">
-                        Taxable: ₹{itemTotal.toFixed(2)} + GST: ₹{gstAmount.toFixed(2)} =
+                      <span className="text-gray-600 dark:text-gray-400">
+                        ₹{itemTotal.toFixed(2)} + GST ₹{gstAmount.toFixed(2)} =
                         <span className="font-bold text-primary-600 ml-1">₹{totalWithGST.toFixed(2)}</span>
                       </span>
                     </div>
@@ -372,7 +372,7 @@ export default function InvoiceForm() {
           <h2 className="text-lg font-semibold mb-4">E-Way Bill Details (Optional)</h2>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">E-Way Bill Number</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">E-Way Bill Number</label>
               <input
                 type="text"
                 value={formData.ewayBill.number}
@@ -386,7 +386,7 @@ export default function InvoiceForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Vehicle Number</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Vehicle Number</label>
               <input
                 type="text"
                 value={formData.ewayBill.vehicleNumber}
@@ -400,7 +400,7 @@ export default function InvoiceForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Distance (km)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Distance (km)</label>
               <input
                 type="number"
                 value={formData.ewayBill.distance}
@@ -418,25 +418,25 @@ export default function InvoiceForm() {
         {/* Summary */}
         <div className="card">
           <h2 className="text-lg font-semibold mb-4">Summary</h2>
-          <div className="max-w-md ml-auto space-y-2">
+          <div className="sm:max-w-md sm:ml-auto space-y-2">
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Subtotal (Taxable):</span>
+              <span className="text-gray-600 dark:text-gray-400">Subtotal (Taxable):</span>
               <span className="font-semibold">₹{calculateSubtotal().toFixed(2)}</span>
             </div>
             <div className="flex justify-between text-sm">
-              <span className="text-gray-600">Total GST:</span>
+              <span className="text-gray-600 dark:text-gray-400">Total GST:</span>
               <span className="font-semibold">₹{calculateGST().toFixed(2)}</span>
             </div>
             {formData.discount > 0 && (
               <div className="flex justify-between text-sm">
-                <span className="text-gray-600">Discount:</span>
-                <span className="font-semibold text-red-600">- ₹{formData.discount.toFixed(2)}</span>
+                <span className="text-gray-600 dark:text-gray-400">Discount:</span>
+                <span className="font-semibold text-danger-600 dark:text-danger-400">- ₹{formData.discount.toFixed(2)}</span>
               </div>
             )}
-            <div className="border-t pt-2">
-              <div className="flex justify-between">
-                <span className="text-lg font-semibold">Grand Total:</span>
-                <span className="text-2xl font-bold text-primary-600">₹{calculateGrandTotal().toFixed(2)}</span>
+            <div className="border-t dark:border-gray-700 pt-2">
+              <div className="flex justify-between items-baseline">
+                <span className="text-base md:text-lg font-semibold">Grand Total:</span>
+                <span className="text-xl md:text-2xl font-bold text-primary-600">₹{calculateGrandTotal().toFixed(2)}</span>
               </div>
             </div>
           </div>

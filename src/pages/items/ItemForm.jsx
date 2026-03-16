@@ -61,7 +61,8 @@ export default function ItemForm() {
       }
       navigate('/items')
     } catch (error) {
-      console.error('Failed to save item:', error)
+
+      toast.error(error.response?.data?.error || 'Failed to save item')
     } finally {
       setLoading(false)
     }
@@ -95,11 +96,11 @@ export default function ItemForm() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 md:gap-4">
         <button onClick={() => navigate('/items')} className="btn btn-secondary">
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-3xl font-bold">{isEdit ? 'Edit' : 'Add'} Item</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{isEdit ? 'Edit' : 'Add'} Item</h1>
       </div>
 
       <div className="card max-w-4xl">
@@ -107,7 +108,7 @@ export default function ItemForm() {
           {/* Basic Info */}
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Item Name *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Item Name *</label>
               <input
                 type="text"
                 name="name"
@@ -119,7 +120,7 @@ export default function ItemForm() {
             </div>
 
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Description</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description</label>
               <textarea
                 name="description"
                 value={formData.description}
@@ -130,7 +131,7 @@ export default function ItemForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Category *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Category *</label>
               <select
                 name="category"
                 value={formData.category}
@@ -146,7 +147,7 @@ export default function ItemForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">HSN Code *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">HSN Code *</label>
               <input
                 type="text"
                 name="hsnCode"
@@ -159,7 +160,7 @@ export default function ItemForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Unit *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Unit *</label>
               <select
                 name="unit"
                 value={formData.unit}
@@ -176,7 +177,7 @@ export default function ItemForm() {
             </div>
 
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">GST Rate * (%)</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GST Rate * (%)</label>
               <select
                 name="gstRate"
                 value={formData.gst.rate}
@@ -198,7 +199,7 @@ export default function ItemForm() {
             <h3 className="text-lg font-semibold mb-3">Pricing</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Base Price (₹)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Base Price (₹)</label>
                 <input
                   type="number"
                   value={formData.pricing.basePrice}
@@ -210,7 +211,7 @@ export default function ItemForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Selling Price (₹) *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Selling Price (₹) *</label>
                 <input
                   type="number"
                   value={formData.pricing.sellingPrice}
@@ -223,7 +224,7 @@ export default function ItemForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Purchase Price (₹)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Purchase Price (₹)</label>
                 <input
                   type="number"
                   value={formData.pricing.purchasePrice}
@@ -242,7 +243,7 @@ export default function ItemForm() {
             <h3 className="text-lg font-semibold mb-3">Stock</h3>
             <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Quantity ({formData.unit})</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity ({formData.unit})</label>
                 <input
                   type="number"
                   value={formData.stock.quantity}
@@ -253,7 +254,7 @@ export default function ItemForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Bags</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bags</label>
                 <input
                   type="number"
                   value={formData.stock.bags}
@@ -264,7 +265,7 @@ export default function ItemForm() {
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Min Stock Level</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Min Stock Level</label>
                 <input
                   type="number"
                   value={formData.stock.minStockLevel}

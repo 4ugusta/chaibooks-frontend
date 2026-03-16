@@ -2,8 +2,17 @@ import { create } from 'zustand'
 import { authAPI } from '../services/api'
 import toast from 'react-hot-toast'
 
+const getSavedUser = () => {
+  try {
+    return JSON.parse(localStorage.getItem('user')) || null
+  } catch {
+    localStorage.removeItem('user')
+    return null
+  }
+}
+
 export const useAuthStore = create((set) => ({
-  user: JSON.parse(localStorage.getItem('user')) || null,
+  user: getSavedUser(),
   token: localStorage.getItem('token') || null,
   loading: false,
 

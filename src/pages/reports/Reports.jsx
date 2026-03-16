@@ -35,7 +35,8 @@ export default function Reports() {
       setGstReport(gstRes.data)
       setProfitLoss(plRes.data)
     } catch (error) {
-      console.error('Failed to load reports:', error)
+
+      toast.error('Failed to load reports')
     } finally {
       setLoading(false)
     }
@@ -112,7 +113,7 @@ export default function Reports() {
       link.remove()
       toast.success('Report downloaded')
     } catch (error) {
-      console.error('Failed to download report:', error)
+
       toast.error('Failed to download report')
     } finally {
       setDownloading(null)
@@ -121,16 +122,16 @@ export default function Reports() {
 
   if (loading) {
     return (
-      <div className="space-y-6">
-        <h1 className="text-3xl font-bold">Reports</h1>
+      <div className="space-y-4 md:space-y-6">
+        <h1 className="text-2xl md:text-3xl font-bold">Reports</h1>
         <div className="card text-center py-8">Loading reports...</div>
       </div>
     )
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Business Reports</h1>
+    <div className="space-y-4 md:space-y-6">
+      <h1 className="text-2xl md:text-3xl font-bold">Business Reports</h1>
 
       {/* Profit & Loss Summary */}
       {profitLoss && (
@@ -138,30 +139,30 @@ export default function Reports() {
           <div className="card">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-600 mb-1">Total Revenue</p>
-                <p className="text-xl lg:text-2xl font-bold text-green-600 truncate" title={`₹${profitLoss.revenue?.toFixed(2)}`}>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Revenue</p>
+                <p className="text-xl lg:text-2xl font-bold text-success-600 dark:text-success-400 truncate" title={`₹${profitLoss.revenue?.toFixed(2)}`}>
                   {formatCurrency(profitLoss.revenue)}
                 </p>
               </div>
-              <TrendingUp className="w-8 h-8 text-green-500 flex-shrink-0 ml-2" />
+              <TrendingUp className="w-8 h-8 text-success-500 flex-shrink-0 ml-2" />
             </div>
           </div>
           <div className="card">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-600 mb-1">Total Costs</p>
-                <p className="text-xl lg:text-2xl font-bold text-red-600 truncate" title={`₹${(profitLoss.cost + profitLoss.expenses)?.toFixed(2)}`}>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Total Costs</p>
+                <p className="text-xl lg:text-2xl font-bold text-danger-600 dark:text-danger-400 truncate" title={`₹${(profitLoss.cost + profitLoss.expenses)?.toFixed(2)}`}>
                   {formatCurrency(profitLoss.cost + profitLoss.expenses)}
                 </p>
               </div>
-              <TrendingDown className="w-8 h-8 text-red-500 flex-shrink-0 ml-2" />
+              <TrendingDown className="w-8 h-8 text-danger-500 flex-shrink-0 ml-2" />
             </div>
           </div>
           <div className="card">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-600 mb-1">Net Profit</p>
-                <p className={`text-xl lg:text-2xl font-bold truncate ${profitLoss.netProfit >= 0 ? 'text-green-600' : 'text-red-600'}`}
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Net Profit</p>
+                <p className={`text-xl lg:text-2xl font-bold truncate ${profitLoss.netProfit >= 0 ? 'text-success-600 dark:text-success-400' : 'text-danger-600 dark:text-danger-400'}`}
                    title={`₹${profitLoss.netProfit?.toFixed(2)}`}>
                   {formatCurrency(profitLoss.netProfit)}
                 </p>
@@ -172,8 +173,8 @@ export default function Reports() {
           <div className="card">
             <div className="flex items-center justify-between">
               <div className="flex-1 min-w-0">
-                <p className="text-sm text-gray-600 mb-1">Profit Margin</p>
-                <p className="text-xl lg:text-2xl font-bold text-blue-600">{profitLoss.profitMargin?.toFixed(2)}%</p>
+                <p className="text-sm text-gray-600 dark:text-gray-400 mb-1">Profit Margin</p>
+                <p className="text-xl lg:text-2xl font-bold text-info-600 dark:text-info-400">{profitLoss.profitMargin?.toFixed(2)}%</p>
               </div>
             </div>
           </div>
@@ -182,14 +183,14 @@ export default function Reports() {
 
       {/* Report Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-        <div className="card border-2 border-transparent hover:border-green-200 transition-colors">
+        <div className="card border-2 border-transparent hover:border-success-200 dark:hover:border-success-800 transition-colors">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-green-100 rounded-lg">
-              <TrendingUp className="w-5 h-5 text-green-600" />
+            <div className="p-2 bg-success-100 dark:bg-success-900/30 rounded-xl">
+              <TrendingUp className="w-5 h-5 text-success-600 dark:text-success-400" />
             </div>
             <h3 className="font-semibold">Sales Report</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">All sale invoices with customer and GST details</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">All sale invoices with customer and GST details</p>
           <div className="flex gap-2">
             <button onClick={loadSalesReport} className="btn btn-secondary btn-sm flex-1">
               <FileText className="w-4 h-4 mr-1" /> View
@@ -204,14 +205,14 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="card border-2 border-transparent hover:border-red-200 transition-colors">
+        <div className="card border-2 border-transparent hover:border-danger-200 dark:hover:border-danger-800 transition-colors">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-red-100 rounded-lg">
-              <ShoppingCart className="w-5 h-5 text-red-600" />
+            <div className="p-2 bg-danger-100 dark:bg-danger-900/30 rounded-xl">
+              <ShoppingCart className="w-5 h-5 text-danger-600 dark:text-danger-400" />
             </div>
             <h3 className="font-semibold">Purchase Report</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">All purchase invoices with supplier and ITC details</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">All purchase invoices with supplier and ITC details</p>
           <div className="flex gap-2">
             <button onClick={loadPurchaseReport} className="btn btn-secondary btn-sm flex-1">
               <FileText className="w-4 h-4 mr-1" /> View
@@ -226,14 +227,14 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="card border-2 border-transparent hover:border-blue-200 transition-colors">
+        <div className="card border-2 border-transparent hover:border-info-200 dark:hover:border-info-800 transition-colors">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-blue-100 rounded-lg">
-              <Package className="w-5 h-5 text-blue-600" />
+            <div className="p-2 bg-info-100 dark:bg-info-900/30 rounded-xl">
+              <Package className="w-5 h-5 text-info-600 dark:text-info-400" />
             </div>
             <h3 className="font-semibold">Stock Report</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">Inventory levels, stock value, and low stock alerts</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">Inventory levels, stock value, and low stock alerts</p>
           <div className="flex gap-2">
             <button onClick={loadStockReport} className="btn btn-secondary btn-sm flex-1">
               <FileText className="w-4 h-4 mr-1" /> View
@@ -248,14 +249,14 @@ export default function Reports() {
           </div>
         </div>
 
-        <div className="card border-2 border-transparent hover:border-purple-200 transition-colors">
+        <div className="card border-2 border-transparent hover:border-purple-200 dark:hover:border-purple-800 transition-colors">
           <div className="flex items-center gap-3 mb-3">
-            <div className="p-2 bg-purple-100 rounded-lg">
-              <ClipboardList className="w-5 h-5 text-purple-600" />
+            <div className="p-2 bg-purple-100 dark:bg-purple-900/30 rounded-xl">
+              <ClipboardList className="w-5 h-5 text-purple-600 dark:text-purple-400" />
             </div>
             <h3 className="font-semibold">GST Report (GSTR-3B)</h3>
           </div>
-          <p className="text-sm text-gray-600 mb-4">GSTR-3B format with ITC, tax payable, and rate breakup</p>
+          <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">GSTR-3B format with ITC, tax payable, and rate breakup</p>
           <div className="flex gap-2">
             <button onClick={() => setActiveTab('gst')} className="btn btn-secondary btn-sm flex-1">
               <FileText className="w-4 h-4 mr-1" /> View
@@ -276,19 +277,19 @@ export default function Reports() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Sales Report</h2>
-            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl" aria-label="Close report">&times;</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-green-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Sales</p>
-              <p className="text-xl font-bold text-green-600">₹{salesData.totalSales?.toFixed(2)}</p>
+            <div className="bg-success-50 dark:bg-success-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Sales</p>
+              <p className="text-xl font-bold text-success-600 dark:text-success-400">₹{salesData.totalSales?.toFixed(2)}</p>
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total GST</p>
-              <p className="text-xl font-bold text-blue-600">₹{salesData.totalGST?.toFixed(2)}</p>
+            <div className="bg-info-50 dark:bg-info-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total GST</p>
+              <p className="text-xl font-bold text-info-600 dark:text-info-400">₹{salesData.totalGST?.toFixed(2)}</p>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Invoices</p>
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Invoices</p>
               <p className="text-xl font-bold">{salesData.totalInvoices}</p>
             </div>
           </div>
@@ -305,19 +306,19 @@ export default function Reports() {
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {salesData.sales.map((sale, i) => (
-                    <tr key={i}>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {salesData.sales.map((sale) => (
+                    <tr key={sale._id || sale.invoiceNumber}>
                       <td className="font-medium">{sale.invoiceNumber}</td>
                       <td>{new Date(sale.invoiceDate).toLocaleDateString('en-IN')}</td>
                       <td>{sale.customer?.name || 'N/A'}</td>
-                      <td className="text-gray-500">{sale.customer?.gstin || '-'}</td>
+                      <td className="text-gray-500 dark:text-gray-400">{sale.customer?.gstin || '-'}</td>
                       <td className="text-right font-semibold">₹{sale.grandTotal?.toFixed(2)}</td>
                       <td>
                         <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                          sale.paymentStatus === 'paid' ? 'bg-green-100 text-green-800' :
-                          sale.paymentStatus === 'partial' ? 'bg-yellow-100 text-yellow-800' :
-                          'bg-red-100 text-red-800'
+                          sale.paymentStatus === 'paid' ? 'bg-success-100 text-success-800 dark:bg-success-900/30 dark:text-success-400' :
+                          sale.paymentStatus === 'partial' ? 'bg-warning-100 text-warning-800 dark:bg-warning-900/30 dark:text-warning-400' :
+                          'bg-danger-100 text-danger-800 dark:bg-danger-900/30 dark:text-danger-400'
                         }`}>
                           {sale.paymentStatus?.toUpperCase()}
                         </span>
@@ -328,7 +329,7 @@ export default function Reports() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No sales data available</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No sales data available</p>
           )}
         </div>
       )}
@@ -338,19 +339,19 @@ export default function Reports() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Purchase Report</h2>
-            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl" aria-label="Close report">&times;</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-red-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Purchases</p>
-              <p className="text-xl font-bold text-red-600">₹{purchaseData.summary?.totalPurchases?.toFixed(2)}</p>
+            <div className="bg-danger-50 dark:bg-danger-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Purchases</p>
+              <p className="text-xl font-bold text-danger-600 dark:text-danger-400">₹{purchaseData.summary?.totalPurchases?.toFixed(2)}</p>
             </div>
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total GST (ITC)</p>
-              <p className="text-xl font-bold text-blue-600">₹{purchaseData.summary?.totalGST?.toFixed(2)}</p>
+            <div className="bg-info-50 dark:bg-info-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total GST (ITC)</p>
+              <p className="text-xl font-bold text-info-600 dark:text-info-400">₹{purchaseData.summary?.totalGST?.toFixed(2)}</p>
             </div>
-            <div className="bg-gray-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Invoices</p>
+            <div className="bg-gray-50 dark:bg-gray-700/50 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Invoices</p>
               <p className="text-xl font-bold">{purchaseData.summary?.totalInvoices}</p>
             </div>
           </div>
@@ -365,9 +366,9 @@ export default function Reports() {
                     <th className="text-right">Invoices</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {purchaseData.data.map((row, i) => (
-                    <tr key={i}>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {purchaseData.data.map((row) => (
+                    <tr key={row._id}>
                       <td className="font-medium">{row._id}</td>
                       <td className="text-right font-semibold">₹{row.totalPurchases?.toFixed(2)}</td>
                       <td className="text-right">₹{row.totalGST?.toFixed(2)}</td>
@@ -378,7 +379,7 @@ export default function Reports() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No purchase data available</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No purchase data available</p>
           )}
         </div>
       )}
@@ -388,20 +389,20 @@ export default function Reports() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">Stock Report</h2>
-            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl" aria-label="Close report">&times;</button>
           </div>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-blue-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Items</p>
-              <p className="text-xl font-bold text-blue-600">{stockData.summary?.totalItems}</p>
+            <div className="bg-info-50 dark:bg-info-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Items</p>
+              <p className="text-xl font-bold text-info-600 dark:text-info-400">{stockData.summary?.totalItems}</p>
             </div>
-            <div className="bg-green-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Total Stock Value</p>
-              <p className="text-xl font-bold text-green-600">₹{stockData.summary?.totalStockValue?.toFixed(2)}</p>
+            <div className="bg-success-50 dark:bg-success-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Total Stock Value</p>
+              <p className="text-xl font-bold text-success-600 dark:text-success-400">₹{stockData.summary?.totalStockValue?.toFixed(2)}</p>
             </div>
-            <div className="bg-red-50 p-3 rounded-lg">
-              <p className="text-sm text-gray-600">Low Stock Items</p>
-              <p className="text-xl font-bold text-red-600">{stockData.summary?.lowStockItems}</p>
+            <div className="bg-danger-50 dark:bg-danger-900/20 p-3 rounded-xl">
+              <p className="text-sm text-gray-600 dark:text-gray-400">Low Stock Items</p>
+              <p className="text-xl font-bold text-danger-600 dark:text-danger-400">{stockData.summary?.lowStockItems}</p>
             </div>
           </div>
           {stockData.items?.length > 0 ? (
@@ -417,9 +418,9 @@ export default function Reports() {
                     <th>Status</th>
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-gray-200">
-                  {stockData.items.map((item, i) => (
-                    <tr key={i}>
+                <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                  {stockData.items.map((item) => (
+                    <tr key={item._id || item.name}>
                       <td className="font-medium">{item.name}</td>
                       <td className="capitalize">{item.category}</td>
                       <td className="text-right">{item.stock?.quantity || 0}</td>
@@ -427,9 +428,9 @@ export default function Reports() {
                       <td className="text-right">{item.stock?.minStockLevel || 0}</td>
                       <td>
                         {(item.stock?.quantity || 0) <= (item.stock?.minStockLevel || 0) ? (
-                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-red-100 text-red-800">LOW</span>
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-danger-100 text-danger-800 dark:bg-danger-900/30 dark:text-danger-400">LOW</span>
                         ) : (
-                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-green-100 text-green-800">OK</span>
+                          <span className="px-2 py-1 rounded-full text-xs font-semibold bg-success-100 text-success-800 dark:bg-success-900/30 dark:text-success-400">OK</span>
                         )}
                       </td>
                     </tr>
@@ -438,7 +439,7 @@ export default function Reports() {
               </table>
             </div>
           ) : (
-            <p className="text-gray-500 text-center py-8">No stock data available</p>
+            <p className="text-gray-500 dark:text-gray-400 text-center py-8">No stock data available</p>
           )}
         </div>
       )}
@@ -448,41 +449,41 @@ export default function Reports() {
         <div className="card">
           <div className="flex items-center justify-between mb-4">
             <h2 className="text-xl font-semibold">GST Summary (GSTR-3B Format)</h2>
-            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 text-xl">&times;</button>
+            <button onClick={() => setActiveTab(null)} className="text-gray-500 hover:text-gray-700 dark:text-gray-400 dark:hover:text-gray-200 text-xl" aria-label="Close report">&times;</button>
           </div>
 
           {gstReport.summary?.length > 0 ? (
             <div className="space-y-4">
-              {gstReport.summary.map((item, index) => (
-                <div key={index} className="border-b pb-4">
+              {gstReport.summary.map((item) => (
+                <div key={item._id} className="border-b dark:border-gray-700 pb-4">
                   <h3 className="font-semibold text-lg capitalize mb-2">{item._id} Transactions</h3>
                   <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                     <div>
-                      <p className="text-sm text-gray-600">CGST</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">CGST</p>
                       <p className="text-base font-semibold" title={`₹${item.totalCGST?.toFixed(2)}`}>{formatCurrency(item.totalCGST)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">SGST</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">SGST</p>
                       <p className="text-base font-semibold" title={`₹${item.totalSGST?.toFixed(2)}`}>{formatCurrency(item.totalSGST)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">IGST</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">IGST</p>
                       <p className="text-base font-semibold" title={`₹${item.totalIGST?.toFixed(2)}`}>{formatCurrency(item.totalIGST)}</p>
                     </div>
                     <div>
-                      <p className="text-sm text-gray-600">Total GST</p>
+                      <p className="text-sm text-gray-600 dark:text-gray-400">Total GST</p>
                       <p className="text-base font-bold text-primary-600" title={`₹${item.totalGST?.toFixed(2)}`}>{formatCurrency(item.totalGST)}</p>
                     </div>
                   </div>
                   <div className="mt-2 text-sm">
-                    <p className="text-gray-600">Taxable Value: <span className="font-semibold">{formatCurrency(item.totalTaxableValue)}</span></p>
-                    <p className="text-gray-600">Invoice Count: <span className="font-semibold">{item.invoiceCount}</span></p>
+                    <p className="text-gray-600 dark:text-gray-400">Taxable Value: <span className="font-semibold">{formatCurrency(item.totalTaxableValue)}</span></p>
+                    <p className="text-gray-600 dark:text-gray-400">Invoice Count: <span className="font-semibold">{item.invoiceCount}</span></p>
                   </div>
                 </div>
               ))}
             </div>
           ) : (
-            <p className="text-gray-500">No GST data available</p>
+            <p className="text-gray-500 dark:text-gray-400">No GST data available</p>
           )}
 
           {gstReport.detailedByRate?.length > 0 && (
@@ -501,9 +502,9 @@ export default function Reports() {
                       <th className="text-right">Total GST</th>
                     </tr>
                   </thead>
-                  <tbody className="divide-y divide-gray-200">
-                    {gstReport.detailedByRate.map((item, index) => (
-                      <tr key={index}>
+                  <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
+                    {gstReport.detailedByRate.map((item) => (
+                      <tr key={`${item._id.invoiceType}-${item._id.gstRate}`}>
                         <td className="capitalize">{item._id.invoiceType}</td>
                         <td>{item._id.gstRate}%</td>
                         <td className="text-right">₹{item.taxableValue?.toFixed(2)}</td>

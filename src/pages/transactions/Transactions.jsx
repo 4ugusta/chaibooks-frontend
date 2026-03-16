@@ -10,6 +10,7 @@ export default function Transactions() {
   const [invoices, setInvoices] = useState([])
   const [loading, setLoading] = useState(true)
   const [showTransactionModal, setShowTransactionModal] = useState(false)
+  const [submitting, setSubmitting] = useState(false)
   const [transactionData, setTransactionData] = useState({
     transactionType: 'payment_received',
     amount: 0,
@@ -25,6 +26,16 @@ export default function Transactions() {
     loadData()
   }, [])
 
+  // Close modal on Escape key
+  useEffect(() => {
+    if (!showTransactionModal) return
+    const handleEscape = (e) => {
+      if (e.key === 'Escape') setShowTransactionModal(false)
+    }
+    document.addEventListener('keydown', handleEscape)
+    return () => document.removeEventListener('keydown', handleEscape)
+  }, [showTransactionModal])
+
   const loadData = async () => {
     try {
       const [transactionsRes, customersRes] = await Promise.all([
@@ -34,7 +45,8 @@ export default function Transactions() {
       setTransactions(transactionsRes.data.transactions || [])
       setCustomers(customersRes.data.customers || [])
     } catch (error) {
-      console.error('Failed to load data:', error)
+
+      toast.error('Failed to load transactions')
     } finally {
       setLoading(false)
     }
@@ -49,15 +61,17 @@ export default function Transactions() {
       const response = await invoiceAPI.getAll({ customer: customerId })
       setInvoices(response.data.invoices || [])
     } catch (error) {
-      console.error('Failed to load invoices:', error)
+
       setInvoices([])
     }
   }
 
   const handleCreateTransaction = async (e) => {
     e.preventDefault()
+    if (submitting) return
+    setSubmitting(true)
+
     try {
-      // Clean up the data before sending
       const dataToSend = {
         transactionType: transactionData.transactionType,
         amount: transactionData.amount,
@@ -66,18 +80,15 @@ export default function Transactions() {
         date: transactionData.date
       }
 
-      // Only add customer if selected
       if (transactionData.customer) {
         dataToSend.customer = transactionData.customer
       }
 
-      // Only add reference data if linking to invoice
       if (transactionData.reference === 'invoice' && transactionData.referenceId) {
         dataToSend.reference = 'invoice'
         dataToSend.referenceId = transactionData.referenceId
         dataToSend.referenceModel = 'Invoice'
       } else {
-        // Set to 'direct' if not linking to invoice
         dataToSend.reference = 'direct'
       }
 
@@ -97,8 +108,10 @@ export default function Transactions() {
       setInvoices([])
       loadData()
     } catch (error) {
-      console.error('Failed to create transaction:', error)
-      toast.error('Failed to create transaction')
+
+      toast.error(error.response?.data?.error || 'Failed to create transaction')
+    } finally {
+      setSubmitting(false)
     }
   }
 
@@ -112,7 +125,7 @@ export default function Transactions() {
       toast.success('Transaction deleted successfully')
       loadData()
     } catch (error) {
-      console.error('Failed to delete transaction:', error)
+
       toast.error('Failed to delete transaction')
     }
   }
@@ -124,28 +137,28 @@ export default function Transactions() {
   }
 
   const getTransactionColor = (type) => {
-    if (type === 'payment_received') return 'text-green-600'
-    if (type === 'payment_made') return 'text-red-600'
-    return 'text-gray-600'
+    if (type === 'payment_received') return 'text-success-600 dark:text-success-400'
+    if (type === 'payment_made') return 'text-danger-600 dark:text-danger-400'
+    return 'text-gray-600 dark:text-gray-400'
   }
 
   return (
-    <div className="space-y-6">
-      <div className="flex items-center justify-between">
-        <h1 className="text-3xl font-bold">Transactions</h1>
-        <button onClick={() => setShowTransactionModal(true)} className="btn btn-primary">
-          <Plus className="w-4 h-4 mr-2" />
-          Record Transaction
+    <div className="space-y-4 md:space-y-6">
+      <div className="flex items-center justify-between gap-4">
+        <h1 className="text-2xl md:text-3xl font-bold">Transactions</h1>
+        <button onClick={() => setShowTransactionModal(true)} className="btn btn-primary text-sm md:text-base">
+          <Plus className="w-4 h-4 mr-1.5" />
+          <span className="hidden sm:inline">Record </span>Transaction
         </button>
       </div>
 
       <div className="card">
         {loading ? (
-          <div className="text-center py-8">Loading...</div>
+          <div className="text-center py-8 text-gray-500 dark:text-gray-400">Loading transactions...</div>
         ) : transactions.length === 0 ? (
           <div className="text-center py-8">
-            <ArrowLeftRight className="w-16 h-16 mx-auto text-gray-300 mb-4" />
-            <p className="text-gray-500">No transactions found.</p>
+            <ArrowLeftRight className="w-16 h-16 mx-auto text-gray-300 dark:text-gray-600 mb-4" />
+            <p className="text-gray-500 dark:text-gray-400">No transactions found.</p>
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -162,25 +175,25 @@ export default function Transactions() {
                   <th>Actions</th>
                 </tr>
               </thead>
-              <tbody className="divide-y divide-gray-200">
+              <tbody className="divide-y divide-gray-200 dark:divide-gray-700">
                 {transactions.map((transaction) => (
                   <tr key={transaction._id}>
                     <td>{format(new Date(transaction.date), 'dd MMM yyyy')}</td>
                     <td>
                       <span className={`flex items-center gap-2 ${getTransactionColor(transaction.transactionType)}`}>
-                        <span className="text-xl">{getTransactionIcon(transaction.transactionType)}</span>
+                        <span className="text-xl" aria-hidden="true">{getTransactionIcon(transaction.transactionType)}</span>
                         {transaction.transactionType.replace('_', ' ')}
                       </span>
                     </td>
-                    <td>{transaction.customer?.name || 'N/A'}</td>
+                    <td className="max-w-[150px] truncate" title={transaction.customer?.name || 'N/A'}>{transaction.customer?.name || 'N/A'}</td>
                     <td className="capitalize">{transaction.paymentMethod}</td>
                     <td className={`font-semibold ${getTransactionColor(transaction.transactionType)}`}>
                       ₹{transaction.amount?.toFixed(2)}
                     </td>
-                    <td className="text-sm text-gray-600">{transaction.description || '-'}</td>
+                    <td className="text-sm text-gray-600 dark:text-gray-400 max-w-[200px] truncate" title={transaction.description || '-'}>{transaction.description || '-'}</td>
                     <td>
                       <span className={`px-2 py-1 rounded-full text-xs font-semibold ${
-                        transaction.status === 'completed' ? 'bg-green-100 text-green-800' : 'bg-gray-100 text-gray-800'
+                        transaction.status === 'completed' ? 'bg-success-100 text-success-800 dark:bg-success-900/30 dark:text-success-400' : 'bg-gray-100 text-gray-800 dark:bg-gray-700 dark:text-gray-300'
                       }`}>
                         {transaction.status}
                       </span>
@@ -188,8 +201,8 @@ export default function Transactions() {
                     <td>
                       <button
                         onClick={() => handleDeleteTransaction(transaction._id)}
-                        className="text-red-600 hover:text-red-800 p-1"
-                        title="Delete transaction"
+                        className="btn-icon text-danger-600 hover:text-danger-800 dark:text-danger-400 dark:hover:text-danger-300 hover:bg-danger-50 dark:hover:bg-danger-900/20"
+                        aria-label="Delete transaction"
                       >
                         <Trash2 className="w-4 h-4" />
                       </button>
@@ -204,12 +217,18 @@ export default function Transactions() {
 
       {/* Transaction Modal */}
       {showTransactionModal && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
-          <div className="bg-white rounded-lg p-6 max-w-md w-full mx-4">
-            <h2 className="text-xl font-semibold mb-4">Record Transaction</h2>
+        <div
+          className="fixed inset-0 bg-black/50 flex items-end sm:items-center justify-center z-50"
+          onClick={() => setShowTransactionModal(false)}
+          role="dialog"
+          aria-modal="true"
+          aria-label="Record transaction"
+        >
+          <div className="bg-white dark:bg-gray-800 rounded-t-xl sm:rounded-xl p-4 md:p-6 max-w-md w-full sm:mx-4 max-h-[90vh] overflow-y-auto" onClick={(e) => e.stopPropagation()}>
+            <h2 className="text-lg md:text-xl font-semibold mb-4">Record Transaction</h2>
             <form onSubmit={handleCreateTransaction} className="space-y-4">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Transaction Type *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Transaction Type *</label>
                 <select
                   value={transactionData.transactionType}
                   onChange={(e) => setTransactionData({ ...transactionData, transactionType: e.target.value })}
@@ -223,20 +242,20 @@ export default function Transactions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Amount (₹) *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Amount (₹) *</label>
                 <input
                   type="number"
                   value={transactionData.amount}
                   onChange={(e) => setTransactionData({ ...transactionData, amount: parseFloat(e.target.value) })}
                   className="input"
-                  min="0"
+                  min="0.01"
                   step="0.01"
                   required
                 />
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Payment Method *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Payment Method *</label>
                 <select
                   value={transactionData.paymentMethod}
                   onChange={(e) => setTransactionData({ ...transactionData, paymentMethod: e.target.value })}
@@ -253,7 +272,7 @@ export default function Transactions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Customer (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Customer (Optional)</label>
                 <select
                   value={transactionData.customer}
                   onChange={(e) => {
@@ -273,7 +292,7 @@ export default function Transactions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Link to Invoice? (Optional)</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Link to Invoice? (Optional)</label>
                 <select
                   value={transactionData.reference}
                   onChange={(e) => setTransactionData({ ...transactionData, reference: e.target.value, referenceId: '' })}
@@ -286,7 +305,7 @@ export default function Transactions() {
 
               {transactionData.reference === 'invoice' && transactionData.customer && (
                 <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1">Select Invoice *</label>
+                  <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Select Invoice *</label>
                   <select
                     value={transactionData.referenceId}
                     onChange={(e) => setTransactionData({ ...transactionData, referenceId: e.target.value })}
@@ -304,7 +323,7 @@ export default function Transactions() {
               )}
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Date *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Date *</label>
                 <input
                   type="date"
                   value={transactionData.date}
@@ -315,7 +334,7 @@ export default function Transactions() {
               </div>
 
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Description *</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Description *</label>
                 <textarea
                   value={transactionData.description}
                   onChange={(e) => setTransactionData({ ...transactionData, description: e.target.value })}
@@ -327,8 +346,8 @@ export default function Transactions() {
               </div>
 
               <div className="flex gap-4 pt-4">
-                <button type="submit" className="btn btn-primary flex-1">
-                  Record Transaction
+                <button type="submit" disabled={submitting} className="btn btn-primary flex-1">
+                  {submitting ? 'Saving...' : 'Record Transaction'}
                 </button>
                 <button
                   type="button"

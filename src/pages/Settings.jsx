@@ -1,8 +1,10 @@
 import { useState } from 'react'
 import { useAuthStore } from '../stores/authStore'
+import toast from 'react-hot-toast'
 
 export default function Settings() {
   const { user, updateProfile } = useAuthStore()
+  const [submitting, setSubmitting] = useState(false)
   const [formData, setFormData] = useState({
     name: user?.name || '',
     email: user?.email || '',
@@ -23,18 +25,28 @@ export default function Settings() {
 
   const handleSubmit = async (e) => {
     e.preventDefault()
-    await updateProfile(formData)
+    if (submitting) return
+    setSubmitting(true)
+    try {
+      await updateProfile(formData)
+      toast.success('Settings saved successfully')
+    } catch (error) {
+
+      toast.error(error.response?.data?.error || 'Failed to save settings')
+    } finally {
+      setSubmitting(false)
+    }
   }
 
   return (
-    <div className="space-y-6">
-      <h1 className="text-3xl font-bold">Settings</h1>
+    <div className="space-y-4 md:space-y-6">
+      <h1 className="text-2xl md:text-3xl font-bold">Settings</h1>
 
       <div className="card max-w-2xl">
         <h2 className="text-xl font-semibold mb-4">Profile Settings</h2>
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name</label>
             <input
               type="text"
               value={formData.name}
@@ -43,7 +55,7 @@ export default function Settings() {
             />
           </div>
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
             <input
               type="email"
               value={formData.email}
@@ -55,7 +67,7 @@ export default function Settings() {
           <h3 className="text-lg font-semibold mt-6 mb-2">Business Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div className="md:col-span-2">
-              <label className="block text-sm font-medium text-gray-700 mb-1">Business Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Business Name</label>
               <input
                 type="text"
                 value={formData.businessDetails.businessName}
@@ -67,7 +79,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GSTIN</label>
               <input
                 type="text"
                 value={formData.businessDetails.gstin}
@@ -80,7 +92,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone</label>
               <input
                 type="tel"
                 value={formData.businessDetails.phone}
@@ -92,7 +104,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Business Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Business Email</label>
               <input
                 type="email"
                 value={formData.businessDetails.email}
@@ -104,7 +116,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Address</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Address</label>
               <input
                 type="text"
                 value={formData.businessDetails.address}
@@ -120,7 +132,7 @@ export default function Settings() {
           <h3 className="text-lg font-semibold mt-6 mb-2">Bank Details</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Account Number</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Account Number</label>
               <input
                 type="text"
                 value={formData.businessDetails.bankAccount.accountNumber}
@@ -136,7 +148,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">IFSC Code</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">IFSC Code</label>
               <input
                 type="text"
                 value={formData.businessDetails.bankAccount.ifscCode}
@@ -152,7 +164,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Bank Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Bank Name</label>
               <input
                 type="text"
                 value={formData.businessDetails.bankAccount.bankName}
@@ -168,7 +180,7 @@ export default function Settings() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Branch Name</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Branch Name</label>
               <input
                 type="text"
                 value={formData.businessDetails.bankAccount.branchName}
@@ -185,8 +197,8 @@ export default function Settings() {
             </div>
           </div>
 
-          <button type="submit" className="btn btn-primary mt-4">
-            Save Changes
+          <button type="submit" disabled={submitting} className="btn btn-primary mt-4">
+            {submitting ? 'Saving...' : 'Save Changes'}
           </button>
         </form>
       </div>

@@ -53,7 +53,7 @@ export default function Register() {
 
       <form onSubmit={handleSubmit} className="space-y-4">
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Your Name
           </label>
           <input
@@ -67,7 +67,7 @@ export default function Register() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Email
           </label>
           <input
@@ -81,7 +81,7 @@ export default function Register() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Password
           </label>
           <input
@@ -96,10 +96,10 @@ export default function Register() {
         </div>
 
         <hr className="my-4" />
-        <h3 className="text-lg font-semibold text-gray-800 mb-2">Business Details</h3>
+        <h3 className="text-lg font-semibold text-gray-800 dark:text-gray-200 mb-2">Business Details</h3>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Business Name
           </label>
           <input
@@ -113,7 +113,7 @@ export default function Register() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             GSTIN
           </label>
           <input
@@ -129,7 +129,7 @@ export default function Register() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Business Address
           </label>
           <textarea
@@ -143,7 +143,7 @@ export default function Register() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Business Phone
           </label>
           <input
@@ -157,7 +157,7 @@ export default function Register() {
         </div>
 
         <div>
-          <label className="block text-sm font-medium text-gray-700 mb-1">
+          <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">
             Business Email
           </label>
           <input
@@ -179,7 +179,7 @@ export default function Register() {
         </button>
       </form>
 
-      <p className="mt-4 text-center text-sm text-gray-600">
+      <p className="mt-4 text-center text-sm text-gray-600 dark:text-gray-400">
         Already have an account?{' '}
         <Link to="/login" className="text-primary-600 hover:text-primary-700 font-medium">
           Login

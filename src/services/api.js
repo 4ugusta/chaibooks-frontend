@@ -1,5 +1,5 @@
 import axios from 'axios'
-import toast from 'react-hot-toast'
+import { useAuthStore } from '../stores/authStore'
 
 const api = axios.create({
   baseURL: import.meta.env.VITE_API_URL || '/api',
@@ -8,10 +8,10 @@ const api = axios.create({
   }
 })
 
-// Request interceptor
+// Request interceptor — reads token from Zustand store (no localStorage hit per request)
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token')
+    const token = useAuthStore.getState().token
     if (token) {
       config.headers.Authorization = `Bearer ${token}`
     }
@@ -22,19 +22,15 @@ api.interceptors.request.use(
   }
 )
 
-// Response interceptor
+// Response interceptor — handles 401 globally, errors handled per-page
 api.interceptors.response.use(
   (response) => response,
   (error) => {
-    const message = error.response?.data?.message || error.message || 'Something went wrong'
-
     if (error.response?.status === 401) {
-      localStorage.removeItem('token')
-      localStorage.removeItem('user')
+      useAuthStore.getState().logout()
       window.location.href = '/login'
     }
 
-    toast.error(message)
     return Promise.reject(error)
   }
 )

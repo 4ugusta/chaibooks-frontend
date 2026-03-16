@@ -48,7 +48,8 @@ export default function CustomerForm() {
       }
       navigate('/customers')
     } catch (error) {
-      console.error('Failed to save customer:', error)
+
+      toast.error(error.response?.data?.error || 'Failed to save customer')
     } finally {
       setLoading(false)
     }
@@ -56,17 +57,17 @@ export default function CustomerForm() {
 
   return (
     <div className="space-y-6">
-      <div className="flex items-center gap-4">
+      <div className="flex items-center gap-3 md:gap-4">
         <button onClick={() => navigate('/customers')} className="btn btn-secondary">
           <ArrowLeft className="w-4 h-4" />
         </button>
-        <h1 className="text-3xl font-bold">{isEdit ? 'Edit' : 'Add'} Customer</h1>
+        <h1 className="text-2xl md:text-3xl font-bold">{isEdit ? 'Edit' : 'Add'} Customer</h1>
       </div>
 
       <div className="card max-w-2xl">
         <form onSubmit={handleSubmit} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Name *</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Name *</label>
             <input
               type="text"
               value={formData.name}
@@ -78,7 +79,7 @@ export default function CustomerForm() {
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">GSTIN {!formData.pan && '*'}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">GSTIN {!formData.pan && '*'}</label>
               <input
                 type="text"
                 value={formData.gstin}
@@ -90,7 +91,7 @@ export default function CustomerForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">PAN {!formData.gstin && '*'}</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">PAN {!formData.gstin && '*'}</label>
               <input
                 type="text"
                 value={formData.pan}
@@ -101,12 +102,12 @@ export default function CustomerForm() {
                 required={!formData.gstin}
               />
             </div>
-            <p className="col-span-2 text-xs text-gray-500 -mt-3">At least one of GSTIN or PAN is required</p>
+            <p className="col-span-2 text-xs text-gray-500 dark:text-gray-400 -mt-3">At least one of GSTIN or PAN is required</p>
           </div>
 
           <div className="grid grid-cols-2 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Phone *</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Phone *</label>
               <input
                 type="tel"
                 value={formData.contact.phone}
@@ -119,7 +120,7 @@ export default function CustomerForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Email</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Email</label>
               <input
                 type="email"
                 value={formData.contact.email}
@@ -133,7 +134,7 @@ export default function CustomerForm() {
           </div>
 
           <div>
-            <label className="block text-sm font-medium text-gray-700 mb-1">Street</label>
+            <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Street</label>
             <input
               type="text"
               value={formData.address.street}
@@ -147,7 +148,7 @@ export default function CustomerForm() {
 
           <div className="grid grid-cols-3 gap-4">
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">City</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">City</label>
               <input
                 type="text"
                 value={formData.address.city}
@@ -159,7 +160,7 @@ export default function CustomerForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">State</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">State</label>
               <input
                 type="text"
                 value={formData.address.state}
@@ -171,7 +172,7 @@ export default function CustomerForm() {
               />
             </div>
             <div>
-              <label className="block text-sm font-medium text-gray-700 mb-1">Pincode</label>
+              <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Pincode</label>
               <input
                 type="text"
                 value={formData.address.pincode}
