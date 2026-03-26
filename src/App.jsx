@@ -58,44 +58,39 @@ function AccountOnHold() {
           </div>
 
           <h1 className="text-2xl font-bold text-stone-800 mb-2">
-            Account On Hold
+            Service Suspended
           </h1>
 
           <p className="text-stone-500 mb-6">
-            Your ChaiBooks account has been temporarily paused due to an outstanding balance.
+            ChaiBooks has been temporarily suspended due to unpaid infrastructure fees from our hosting providers.
           </p>
 
           {/* Amount Due Card */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
-            <p className="text-sm font-medium text-amber-700 mb-1">Amount Due</p>
+            <p className="text-sm font-medium text-amber-700 mb-1">Outstanding Infrastructure Fees</p>
             <p className="text-4xl font-bold text-amber-800">$75.00</p>
-            <p className="text-sm text-amber-600 mt-1">Past due balance</p>
+            <div className="mt-3 text-left space-y-1">
+              <div className="flex justify-between text-sm text-amber-700">
+                <span>Vercel Pro (Frontend Hosting)</span>
+                <span>$20.00</span>
+              </div>
+              <div className="flex justify-between text-sm text-amber-700">
+                <span>Railway (Backend &amp; Database)</span>
+                <span>$35.00</span>
+              </div>
+              <div className="flex justify-between text-sm text-amber-700">
+                <span>MongoDB Atlas (Data Storage)</span>
+                <span>$20.00</span>
+              </div>
+            </div>
           </div>
 
-          <p className="text-stone-600 text-sm mb-6">
-            Please clear your outstanding balance to resume access to your account and all ChaiBooks features.
+          <p className="text-stone-600 text-sm mb-4">
+            These hosting and infrastructure costs need to be cleared before service can be restored. All your data is safe and will be available once the balance is settled.
           </p>
 
-          {/* Contact */}
-          <div className="bg-stone-50 rounded-xl p-4 mb-6">
-            <p className="text-sm text-stone-500 mb-1">Contact us to resolve</p>
-            <a
-              href="mailto:b.augusta1103@gmail.com?subject=ChaiBooks%20-%20Clear%20Outstanding%20Balance"
-              className="text-primary-600 font-medium hover:text-primary-700 transition-colors"
-            >
-              b.augusta1103@gmail.com
-            </a>
-          </div>
-
-          <a
-            href="mailto:b.augusta1103@gmail.com?subject=ChaiBooks%20-%20Clear%20Outstanding%20Balance"
-            className="w-full inline-flex items-center justify-center px-6 py-3 bg-primary-600 text-white font-medium rounded-xl hover:bg-primary-700 transition-colors focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
-          >
-            Contact to Pay
-          </a>
-
           <p className="text-xs text-stone-400 mt-6">
-            Once payment is confirmed, your account will be reactivated.
+            Once payment is confirmed, your account will be reactivated automatically.
           </p>
         </div>
       </div>
