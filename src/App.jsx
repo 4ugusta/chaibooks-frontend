@@ -68,19 +68,52 @@ function AccountOnHold() {
           {/* Amount Due Card */}
           <div className="bg-amber-50 border border-amber-200 rounded-xl p-5 mb-6">
             <p className="text-sm font-medium text-amber-700 mb-1">Outstanding Infrastructure Fees</p>
-            <p className="text-4xl font-bold text-amber-800">$75.00</p>
-            <div className="mt-3 text-left space-y-1">
-              <div className="flex justify-between text-sm text-amber-700">
-                <span>Vercel Pro (Frontend Hosting)</span>
-                <span>$20.00</span>
+            <p className="text-4xl font-bold text-amber-800">$100.00</p>
+            <p className="text-xs text-amber-600 mt-1 mb-3">Unpaid for 2 months</p>
+
+            {/* February */}
+            <div className="text-left mb-3">
+              <p className="text-xs font-semibold text-amber-800 mb-1 uppercase tracking-wide">February 2026</p>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>Vercel Pro (Frontend Hosting)</span>
+                  <span>$10.00</span>
+                </div>
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>Railway (Backend &amp; API)</span>
+                  <span>$17.50</span>
+                </div>
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>MongoDB Atlas (Data Storage)</span>
+                  <span>$10.00</span>
+                </div>
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>Domain &amp; SSL</span>
+                  <span>$12.50</span>
+                </div>
               </div>
-              <div className="flex justify-between text-sm text-amber-700">
-                <span>Railway (Backend &amp; Database)</span>
-                <span>$35.00</span>
-              </div>
-              <div className="flex justify-between text-sm text-amber-700">
-                <span>MongoDB Atlas (Data Storage)</span>
-                <span>$20.00</span>
+            </div>
+
+            {/* March */}
+            <div className="text-left border-t border-amber-200 pt-3">
+              <p className="text-xs font-semibold text-amber-800 mb-1 uppercase tracking-wide">March 2026</p>
+              <div className="space-y-1">
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>Vercel Pro (Frontend Hosting)</span>
+                  <span>$10.00</span>
+                </div>
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>Railway (Backend &amp; API)</span>
+                  <span>$17.50</span>
+                </div>
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>MongoDB Atlas (Data Storage)</span>
+                  <span>$10.00</span>
+                </div>
+                <div className="flex justify-between text-sm text-amber-700">
+                  <span>Domain &amp; SSL</span>
+                  <span>$12.50</span>
+                </div>
               </div>
             </div>
           </div>
