@@ -5,7 +5,7 @@ import { useAuthStore } from './stores/authStore'
 
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 // Set to false to re-enable the full app
-const APP_ON_HOLD = true
+const APP_ON_HOLD = false
 // ━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
 
 // Layouts (always loaded — they wrap everything)
